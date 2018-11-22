@@ -2,23 +2,21 @@ package player
 
 import (
 	"github.com/bombergame/multiplayer-service/game/physics"
-	"github.com/satori/go.uuid"
-	"time"
 )
 
 const (
-	StatusInGame     = "player.status.online"
-	StatusDroppedOut = "player.status.offline"
+	StateAlive = "player.state.alive"
+	StateDead  = "player.state.dead"
 
-	DefaultSpeed = physics.Speed(4.0 / time.Second)
+	DefaultSpeed = 4.0
 )
 
 type CommandsChan <-chan Command
 type BeforeMoveFunc func(pNew physics.PositionVec2D) error
 
 type Player struct {
-	id     uuid.UUID
-	status status
+	id    int64
+	state state
 
 	transform transform
 
@@ -26,7 +24,7 @@ type Player struct {
 	beforeMove *BeforeMoveFunc
 }
 
-type status string
+type state string
 
 type transform struct {
 	speed       physics.Speed
@@ -34,10 +32,10 @@ type transform struct {
 	positionVec physics.PositionVec2D
 }
 
-func NewPlayer(id uuid.UUID) *Player {
+func NewPlayer(id int64) *Player {
 	return &Player{
-		id:     id,
-		status: StatusInGame,
+		id:    id,
+		state: StateAlive,
 
 		transform: transform{
 			speed:       DefaultSpeed,
@@ -48,6 +46,10 @@ func NewPlayer(id uuid.UUID) *Player {
 		commands:   nil,
 		beforeMove: nil,
 	}
+}
+
+func (p Player) GetID() int64 {
+	return p.id
 }
 
 func (p *Player) SetCommandsChan(cmdCh *CommandsChan) {
@@ -63,7 +65,7 @@ func (p *Player) MoveTo(pVecNew physics.PositionVec2D) {
 }
 
 func (p *Player) PerformStep(t physics.Time) {
-	if p.status == StatusInGame {
+	if p.state != StateDead {
 		p.handleCommands()
 		p.handleMovement(t)
 	}

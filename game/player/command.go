@@ -1,11 +1,11 @@
 package player
 
 const (
-	CommandStop      = "transform.stop"
-	CommandMoveUp    = "transform.handleMovement.up"
-	CommandMoveDown  = "transform.handleMovement.down"
-	CommandMoveLeft  = "transform.handleMovement.left"
-	CommandMoveRight = "transform.handleMovement.right"
+	CommandStop      = "player.stop"
+	CommandMoveUp    = "player.move.up"
+	CommandMoveDown  = "player.move.down"
+	CommandMoveLeft  = "player.move.left"
+	CommandMoveRight = "player.move.right"
 )
 
 type Command string
