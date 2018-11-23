@@ -104,7 +104,7 @@ func (p *Player) handleMovement(t physics.Time) {
 }
 
 func (p *Player) tryMoveOrStop(pVecNew physics.PositionVec2D) {
-	if err := p.beforeMove; err == nil {
+	if err := p.beforeMove(pVecNew); err == nil {
 		p.transform.positionVec = pVecNew
 	} else {
 		p.transform.speedVec = physics.GetSpeedVec2DZeros()

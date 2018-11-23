@@ -43,6 +43,7 @@ func NewRoom(id uuid.UUID, maxPlayers int32) *Room {
 		maxNumPlayers: maxPlayers,
 		players:       make(map[int64]*player.Player),
 		field:         field.NewField(field.GetSize(field.DefaultWidth, field.DefaultHeight)),
+		mutex: 		   &sync.Mutex{},
 	}
 }
 
