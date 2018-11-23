@@ -13,9 +13,9 @@ import (
 const (
 	MaxNumPlayers = 4
 
-	GameStateOn     = "game.gameState.on"
-	GameStatePaused = "game.gameState.paused"
-	GameStateOver   = "game.gameState.over"
+	GameStateOn     = "game.state.on"
+	GameStatePaused = "game.state.paused"
+	GameStateOver   = "game.state.over"
 
 	TicksPerSecond = 20
 	TicksTimeDiff  = physics.Time(1.0 / TicksPerSecond)
