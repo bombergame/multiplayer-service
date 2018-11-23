@@ -38,6 +38,7 @@ type Room struct {
 func NewRoom(id uuid.UUID, maxPlayers int32) *Room {
 	return &Room{
 		id:            id,
+		gameState:     GameStateOn,
 		ticker:        time.NewTicker(time.Second / TicksPerSecond),
 		maxNumPlayers: maxPlayers,
 		players:       make(map[int64]*player.Player),
