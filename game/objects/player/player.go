@@ -21,7 +21,7 @@ type Player struct {
 	transform transform
 
 	commands   *CommandsChan
-	beforeMove *BeforeMoveFunc
+	beforeMove BeforeMoveFunc
 }
 
 type state string
@@ -56,7 +56,7 @@ func (p *Player) SetCommandsChan(cmdCh *CommandsChan) {
 	p.commands = cmdCh
 }
 
-func (p *Player) SetBeforeMoveFunc(f *BeforeMoveFunc) {
+func (p *Player) SetBeforeMoveFunc(f BeforeMoveFunc) {
 	p.beforeMove = f
 }
 

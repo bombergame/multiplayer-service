@@ -4,6 +4,7 @@ import (
 	"github.com/bombergame/multiplayer-service/game/objects/field/cell"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"math"
+	"math/rand"
 )
 
 type Field struct {
@@ -45,6 +46,19 @@ func (f *Field) IsValidPosition(p physics.PositionVec2D) bool {
 func (f *Field) IsCellEmpty(p physics.PositionVec2D) bool {
 	xInt, yInt := positionVec2DToCellIndexes(p)
 	return f.cells[xInt][yInt].IsEmpty()
+}
+
+func (f *Field) GetRandomEmptyPosition() physics.PositionVec2D {
+	var xInt, yInt Integer
+	for {
+		xInt = Integer(rand.Intn(int(f.size.Width)))
+		yInt = Integer(rand.Intn(int(f.size.Width)))
+
+		if f.cells[yInt][xInt].IsEmpty() {
+			break
+		}
+	}
+	return physics.GetPositionVec2D(physics.Coordinate(xInt), physics.Coordinate(yInt))
 }
 
 func positionVec2DToCellIndexes(p physics.PositionVec2D) (Integer, Integer) {

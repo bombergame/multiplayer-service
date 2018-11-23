@@ -1,7 +1,8 @@
 package room
 
 import (
-	"github.com/bombergame/multiplayer-service/errs"
+	"github.com/bombergame/multiplayer-service/game/errs"
+	"github.com/bombergame/multiplayer-service/game/objects/field"
 	"github.com/bombergame/multiplayer-service/game/objects/player"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"github.com/satori/go.uuid"
@@ -29,6 +30,8 @@ type Room struct {
 	maxNumPlayers int32
 	players       map[int64]*player.Player
 
+	field *field.Field
+
 	mutex *sync.Mutex
 }
 
@@ -36,8 +39,9 @@ func NewRoom(id uuid.UUID, maxPlayers int32) *Room {
 	return &Room{
 		id:            id,
 		ticker:        time.NewTicker(time.Second / TicksPerSecond),
-		players:       make(map[int64]*player.Player),
 		maxNumPlayers: maxPlayers,
+		players:       make(map[int64]*player.Player),
+		field:         field.NewField(field.GetSize(field.DefaultWidth, field.DefaultHeight)),
 	}
 }
 
@@ -49,8 +53,15 @@ func (r *Room) AddPlayer(p *player.Player) error {
 		return errs.FullRoomError
 	}
 
+	p.SetBeforeMoveFunc(func(pNew physics.PositionVec2D) error {
+		if !r.field.IsValidPosition(pNew) || !r.field.IsCellEmpty(pNew) {
+			return errs.CannotMoveError
+		}
+		return nil
+	})
+	p.MoveTo(r.field.GetRandomEmptyPosition())
+
 	r.players[p.GetID()] = p
-	//TODO: Move to random empty cell, add callbacks
 
 	return nil
 }

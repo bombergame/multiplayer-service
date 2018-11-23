@@ -1,6 +1,8 @@
 package errs
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	PlayerNotFoundError = errors.New("player not found")

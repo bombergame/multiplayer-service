@@ -1,6 +1,8 @@
 package errs
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	FullRoomError = errors.New("full room")
