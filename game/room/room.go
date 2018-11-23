@@ -2,8 +2,8 @@ package room
 
 import (
 	"github.com/bombergame/multiplayer-service/errs"
+	"github.com/bombergame/multiplayer-service/game/objects/player"
 	"github.com/bombergame/multiplayer-service/game/physics"
-	"github.com/bombergame/multiplayer-service/game/player"
 	"github.com/satori/go.uuid"
 	"sync"
 	"time"
