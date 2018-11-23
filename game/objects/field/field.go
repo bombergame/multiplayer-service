@@ -45,14 +45,14 @@ func (f *Field) IsValidPosition(p physics.PositionVec2D) bool {
 
 func (f *Field) IsCellEmpty(p physics.PositionVec2D) bool {
 	xInt, yInt := positionVec2DToCellIndexes(p)
-	return f.cells[xInt][yInt].IsEmpty()
+	return f.cells[yInt][xInt].IsEmpty()
 }
 
 func (f *Field) GetRandomEmptyPosition() physics.PositionVec2D {
 	var xInt, yInt Integer
 	for {
 		xInt = Integer(rand.Intn(int(f.size.Width)))
-		yInt = Integer(rand.Intn(int(f.size.Width)))
+		yInt = Integer(rand.Intn(int(f.size.Height)))
 
 		if f.cells[yInt][xInt].IsEmpty() {
 			break
