@@ -13,37 +13,45 @@ import (
 const (
 	MaxNumPlayers = 4
 
-	GameStateOn     = "game.state.on"
-	GameStatePaused = "game.state.paused"
-	GameStateOver   = "game.state.over"
+	GameStatePending = "game.state.pending"
+	GameStateOn      = "game.state.on"
+	GameStatePaused  = "game.state.paused"
+	GameStateOver    = "game.state.over"
 
 	TicksPerSecond = 20
 	TicksTimeDiff  = physics.Time(1.0 / TicksPerSecond)
 )
 
+//easyjson:json
 type Room struct {
-	id        uuid.UUID
-	gameState gameState
+	id         uuid.UUID `json:"id"`
+	numPlayers int32     `json:"-"`
 
-	ticker *time.Ticker
+	gameState gameState    `json:"game_state"`
+	ticker    *time.Ticker `json:"-"`
 
-	maxNumPlayers int32
-	players       map[int64]*player.Player
+	field   *field.Field             `json:"field"`
+	players map[int64]*player.Player `json:"players"`
 
-	field *field.Field
-
-	mutex *sync.Mutex
+	mutex *sync.Mutex `json:"-"`
 }
 
-func NewRoom(id uuid.UUID, maxPlayers int32) *Room {
+func (r *Room) Id() uuid.UUID {
+	return r.id
+}
+
+func NewRoom(id uuid.UUID, numPlayers int32) *Room {
 	return &Room{
-		id:            id,
-		gameState:     GameStateOn,
-		ticker:        time.NewTicker(time.Second / TicksPerSecond),
-		maxNumPlayers: maxPlayers,
-		players:       make(map[int64]*player.Player),
-		field:         field.NewField(field.GetSize(field.DefaultWidth, field.DefaultHeight)),
-		mutex: 		   &sync.Mutex{},
+		id:         id,
+		numPlayers: numPlayers,
+
+		gameState: GameStatePending,
+		ticker:    time.NewTicker(time.Second / TicksPerSecond),
+
+		players: make(map[int64]*player.Player),
+		field:   field.NewField(field.GetSize(field.DefaultWidth, field.DefaultHeight)),
+
+		mutex: &sync.Mutex{},
 	}
 }
 
@@ -51,7 +59,7 @@ func (r *Room) AddPlayer(p *player.Player) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	if len(r.players) == int(r.maxNumPlayers) {
+	if len(r.players) == int(r.numPlayers) {
 		return errs.FullRoomError
 	}
 

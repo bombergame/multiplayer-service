@@ -11,26 +11,19 @@ const (
 	DefaultSpeed = 4.0
 )
 
+//easyjson:json
+type Player struct {
+	id    int64 `json:"id"`
+	state state `json:"state"`
+
+	transform transform `json:"transform"`
+
+	commands   *CommandsChan  `json:"-"`
+	beforeMove BeforeMoveFunc `json:"-"`
+}
+
 type CommandsChan <-chan Command
 type BeforeMoveFunc func(pNew physics.PositionVec2D) error
-
-type Player struct {
-	id    int64
-	state state
-
-	transform transform
-
-	commands   *CommandsChan
-	beforeMove BeforeMoveFunc
-}
-
-type state string
-
-type transform struct {
-	speed       physics.Speed
-	speedVec    physics.SpeedVec2D
-	positionVec physics.PositionVec2D
-}
 
 func NewPlayer(id int64) *Player {
 	return &Player{
@@ -69,6 +62,16 @@ func (p *Player) PerformStep(t physics.Time) {
 		p.handleCommands()
 		p.handleMovement(t)
 	}
+}
+
+//easyjson:json
+type state string
+
+//easyjson:json
+type transform struct {
+	speed       physics.Speed         `json:"speed"`
+	speedVec    physics.SpeedVec2D    `json:"speed_vec"`
+	positionVec physics.PositionVec2D `json:"position_vec"`
 }
 
 func (p *Player) handleCommands() {
