@@ -21,7 +21,7 @@ type Config struct {
 
 type Components struct {
 	rest.Components
-	roomsManager *utils.RoomsManager
+	RoomsManager *utils.RoomsManager
 }
 
 func NewService(cf Config, cpn Components) *Service {
@@ -43,7 +43,7 @@ func NewService(cf Config, cpn Components) *Service {
 		http.MethodGet:  http.HandlerFunc(srv.getRooms),
 		http.MethodPost: http.HandlerFunc(srv.createRoom),
 	})
-	mx.Handle("/multiplayer/rooms/{room_id::[0-9]+}", handlers.MethodHandler{
+	mx.Handle("/multiplayer/rooms/{room_id::[a-z0-9]+}", handlers.MethodHandler{
 		http.MethodGet:    http.HandlerFunc(srv.getRoom),
 		http.MethodPatch:  http.HandlerFunc(srv.joinRoom),
 		http.MethodDelete: http.HandlerFunc(srv.deleteRoom),
