@@ -27,6 +27,12 @@ type Player struct {
 	checkCollision objects.CollisionChecker
 }
 
+func NewPlayer(id int64) *Player {
+	return &Player{
+		id: id,
+	}
+}
+
 func (p *Player) Type() objects.ObjectType {
 	return objects.Player
 }
