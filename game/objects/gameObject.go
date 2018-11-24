@@ -1,10 +1,17 @@
 package objects
 
 import (
+	"github.com/bombergame/multiplayer-service/game/components/collider"
+	"github.com/bombergame/multiplayer-service/game/components/transform"
 	"github.com/bombergame/multiplayer-service/game/physics"
 )
 
 type GameObject interface {
-	GetType() ObjectType
+	Type() ObjectType
+	Collider() collider.Collider
+
+	Start()
 	Update(timeDiff physics.Time)
 }
+
+type CollisionChecker func(t transform.Transform) GameObject

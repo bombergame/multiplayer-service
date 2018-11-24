@@ -1,4 +1,4 @@
-package components
+package movement
 
 import (
 	"github.com/bombergame/multiplayer-service/game/physics"
