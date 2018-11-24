@@ -5,5 +5,6 @@ import (
 )
 
 type Movement struct {
+	Speed    physics.Speed
 	SpeedVec physics.SpeedVec2D
 }

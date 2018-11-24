@@ -14,4 +14,4 @@ type GameObject interface {
 	Update(timeDiff physics.Time)
 }
 
-type CollisionChecker func(t transform.Transform) GameObject
+type CollisionChecker func(t transform.Transform, c collider.Collider) GameObject

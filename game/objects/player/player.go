@@ -39,6 +39,10 @@ func (p *Player) SetCmdChan(cmdChan *commands.Chan) {
 	p.cmdChan = cmdChan
 }
 
+func (p *Player) SetCollisionChecker(f objects.CollisionChecker) {
+	p.checkCollision = f
+}
+
 func (p *Player) Start() {
 	p.spawn()
 	p.state = state.Alive
@@ -54,7 +58,13 @@ func (p *Player) spawn() {
 }
 
 func (p *Player) move(timeDiff physics.Time) {
-	//TODO
+	prevPosVec := p.transform.Position
+	p.transform.Position.Translate(p.movement.SpeedVec, timeDiff)
+
+	if p.checkCollision(p.transform, p.collider) != nil {
+		p.transform.Position = prevPosVec
+		p.movement.SpeedVec = physics.GetSpeedVec2DZeros()
+	}
 }
 
 func (p *Player) handleCommands() {
@@ -73,12 +83,12 @@ func (p *Player) handleCommand(c commands.Command) {
 	case commands.Stop:
 		p.movement.SpeedVec = physics.GetSpeedVec2DZeros()
 	case commands.MoveUp:
-		p.movement.SpeedVec = physics.GetSpeedVec2D(0, DefaultSpeed)
+		p.movement.SpeedVec = physics.GetSpeedVec2D(0, p.movement.Speed)
 	case commands.MoveDown:
-		p.movement.SpeedVec = physics.GetSpeedVec2D(0, -DefaultSpeed)
+		p.movement.SpeedVec = physics.GetSpeedVec2D(0, -p.movement.Speed)
 	case commands.MoveLeft:
-		p.movement.SpeedVec = physics.GetSpeedVec2D(-DefaultSpeed, 0)
+		p.movement.SpeedVec = physics.GetSpeedVec2D(-p.movement.Speed, 0)
 	case commands.MoveRight:
-		p.movement.SpeedVec = physics.GetSpeedVec2D(DefaultSpeed, 0)
+		p.movement.SpeedVec = physics.GetSpeedVec2D(p.movement.Speed, 0)
 	}
 }
