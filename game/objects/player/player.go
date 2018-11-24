@@ -22,7 +22,7 @@ type Player struct {
 	beforeMove BeforeMoveFunc `json:"-"`
 }
 
-type CommandsChan <-chan Command
+type CommandsChan chan Command
 type BeforeMoveFunc func(pNew physics.PositionVec2D) error
 
 func NewPlayer(id int64) *Player {
