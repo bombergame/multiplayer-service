@@ -1,13 +1,9 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/bombergame/multiplayer-service/game/objects/wall"
+	"github.com/bombergame/common/logs"
 )
 
 func main() {
-	w := wall.NewWall()
-	b, _ := json.Marshal(w)
-	fmt.Println(string(b))
+	_ = logs.NewLogger()
 }
