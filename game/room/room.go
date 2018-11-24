@@ -11,3 +11,7 @@ type Room struct {
 func NewRoom(id uuid.UUID) *Room {
 	return &Room{}
 }
+
+func (r *Room) Id() uuid.UUID {
+	return r.id
+}
