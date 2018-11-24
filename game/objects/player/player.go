@@ -10,10 +10,6 @@ import (
 	"github.com/bombergame/multiplayer-service/game/physics"
 )
 
-const (
-	DefaultSpeed = 0.05
-)
-
 type Player struct {
 	id    int64
 	state state.State
