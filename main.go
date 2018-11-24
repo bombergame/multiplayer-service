@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/bombergame/common/logs"
+	restful "github.com/bombergame/common/rest"
 	"github.com/bombergame/multiplayer-service/services/rest"
 	"github.com/bombergame/multiplayer-service/utils"
 	"os"
@@ -15,6 +16,10 @@ func main() {
 		rest.Config{},
 		rest.Components{
 			RoomsManager: utils.NewRoomsManager(),
+			Components: restful.Components{
+				Logger:      logger,
+				AuthManager: utils.NewAuthManager(),
+			},
 		},
 	)
 
