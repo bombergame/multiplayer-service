@@ -34,12 +34,26 @@ func (srv *Service) createRoom(w http.ResponseWriter, r *http.Request) {
 	srv.WriteOkWithBody(w, newRoom)
 }
 
-func (srv *Service) getRooms(w http.ResponseWriter, r *http.Request) {
-	//TODO
-}
-
 func (srv *Service) getRoom(w http.ResponseWriter, r *http.Request) {
-	//TODO
+	_, err := srv.ReadAuthProfileID(r)
+	if err != nil {
+		srv.WriteErrorWithBody(w, err)
+		return
+	}
+
+	roomID, err := srv.readRoomID(r)
+	if err != nil {
+		srv.WriteErrorWithBody(w, err)
+		return
+	}
+
+	_, err = srv.components.RoomsManager.GetRoom(roomID)
+	if err != nil {
+		srv.WriteErrorWithBody(w, err)
+		return
+	}
+
+	srv.WriteOk(w)
 }
 
 func (srv *Service) joinRoom(w http.ResponseWriter, r *http.Request) {

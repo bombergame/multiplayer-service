@@ -14,5 +14,5 @@ func NewAuthManager() *AuthManager {
 
 func (m *AuthManager) GetProfileInfo(authToken string, userAgent string) (*auth.ProfileInfo, error) {
 	//TODO
-	return &auth.ProfileInfo{ID: rand.Int63()}, nil
+	return &auth.ProfileInfo{ID: rand.Int63() % 500}, nil
 }

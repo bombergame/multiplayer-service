@@ -44,7 +44,6 @@ func NewService(cf Config, cpn Components) *Service {
 
 	mx := mux.NewRouter()
 	mx.Handle("/multiplayer/rooms", handlers.MethodHandler{
-		http.MethodGet:  http.HandlerFunc(srv.getRooms),
 		http.MethodPost: http.HandlerFunc(srv.createRoom),
 	})
 	mx.Handle("/multiplayer/rooms/{room_id:[0-9-a-z]+}", handlers.MethodHandler{
