@@ -43,16 +43,15 @@ func NewService(cf Config, cpn Components) *Service {
 	}
 
 	mx := mux.NewRouter()
-	mx.Handle("/multiplayer/rooms", handlers.MethodHandler{
-		http.MethodPost: http.HandlerFunc(srv.createRoom),
+	mx.Handle(RoomsPath, handlers.MethodHandler{
+		http.MethodPost: srv.WithAuth(http.HandlerFunc(srv.createRoom)),
 	})
-	mx.Handle("/multiplayer/rooms/{room_id:[0-9-a-z]+}", handlers.MethodHandler{
-		http.MethodGet:    http.HandlerFunc(srv.getRoom),
-		http.MethodPatch:  http.HandlerFunc(srv.joinRoom),
-		http.MethodDelete: http.HandlerFunc(srv.deleteRoom),
+	mx.Handle(RoomPath, handlers.MethodHandler{
+		http.MethodDelete: srv.WithAuth(http.HandlerFunc(srv.deleteRoom)),
 	})
+	mx.Handle(RoomPath+"/ws", http.HandlerFunc(srv.handleGameplay))
 
-	srv.SetHandler(srv.WithLogs(srv.WithRecover(srv.WithAuth(mx))))
+	srv.SetHandler(srv.WithLogs(srv.WithRecover(mx)))
 
 	return srv
 }

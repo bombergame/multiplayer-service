@@ -56,10 +56,6 @@ func (srv *Service) getRoom(w http.ResponseWriter, r *http.Request) {
 	srv.WriteOk(w)
 }
 
-func (srv *Service) joinRoom(w http.ResponseWriter, r *http.Request) {
-	//TODO
-}
-
 func (srv *Service) deleteRoom(w http.ResponseWriter, r *http.Request) {
 	//TODO
 }
