@@ -9,7 +9,9 @@ type Room struct {
 }
 
 func NewRoom(id uuid.UUID) *Room {
-	return &Room{}
+	return &Room{
+		id: id,
+	}
 }
 
 func (r *Room) Id() uuid.UUID {

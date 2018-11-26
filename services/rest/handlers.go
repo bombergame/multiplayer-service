@@ -14,25 +14,28 @@ func (srv *Service) createRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var room domains.Room
-	if err := srv.ReadRequestBody(&room, r); err != nil {
+	var mRoom domains.Room
+	if err := srv.ReadRequestBody(&mRoom, r); err != nil {
 		srv.WriteErrorWithBody(w, err)
 		return
 	}
-	if err := room.Validate(); err != nil {
+	if err := mRoom.Validate(); err != nil {
 		srv.WriteErrorWithBody(w, err)
 		return
 	}
 
-	room.ID = uuid.NewV4()
+	mRoom.ID = uuid.NewV4()
+	room := rooms.NewRoom(mRoom.ID)
 
-	err = srv.components.RoomsManager.AddRoom(rooms.NewRoom(room.ID))
+	srv.Logger().Info("room id: ", mRoom.ID)
+
+	err = srv.components.RoomsManager.AddRoom(room)
 	if err != nil {
 		srv.WriteErrorWithBody(w, err)
 		return
 	}
 
-	srv.WriteOkWithBody(w, room)
+	srv.WriteOkWithBody(w, mRoom)
 }
 
 func (srv *Service) deleteRoom(w http.ResponseWriter, r *http.Request) {
