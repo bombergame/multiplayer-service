@@ -36,7 +36,7 @@ func (rm *RoomsManager) GetRoom(id uuid.UUID) (*rooms.Room, error) {
 	defer rm.rwMutex.RUnlock()
 
 	r, ok := rm.rooms[id]
-	if ok {
+	if !ok {
 		return nil, errs.NewNotFoundError("room not found")
 	}
 
