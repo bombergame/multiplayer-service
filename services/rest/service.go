@@ -54,7 +54,7 @@ func NewService(cf Config, cpn Components) *Service {
 	mx.Handle(RoomPath+"/ws", http.HandlerFunc(srv.handleGameplay))
 
 	cors := rest.CORS{
-		Origins:     []string{"http://locahost:8000"},
+		Origins:     []string{"http://127.0.0.1:8000"},
 		Methods:     []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodOptions},
 		Headers:     []string{"User-Agent", "Authorization", "Content-Type", "Content-Length"},
 		Credentials: true,
