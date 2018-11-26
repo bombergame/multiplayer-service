@@ -83,7 +83,7 @@ func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketMessag
 		return 0, errs.NewInvalidFormatError("no user_agent field")
 	}
 
-	authReqData.UserAgent, ok = atItf.(string)
+	authReqData.UserAgent, ok = agItf.(string)
 	if !ok {
 		return 0, errs.NewInvalidFormatError("wrong user_agent field")
 	}
