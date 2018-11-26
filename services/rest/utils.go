@@ -6,7 +6,6 @@ import (
 	"github.com/bombergame/common/errs"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	"github.com/mailru/easyjson"
 	"github.com/satori/go.uuid"
 	"net/http"
 )
@@ -42,12 +41,7 @@ func (srv *Service) writeWebSockError(conn *websocket.Conn, err error) {
 		},
 	}
 
-	resp, err := easyjson.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-
-	if err := conn.WriteMessage(0, resp); err != nil {
+	if err := conn.WriteJSON(msg); err != nil {
 		srv.Logger().Error(err)
 		return
 	}
