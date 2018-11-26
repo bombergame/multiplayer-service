@@ -3,6 +3,7 @@ package rest
 import (
 	"github.com/bombergame/common/consts"
 	"github.com/bombergame/common/errs"
+	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/gorilla/websocket"
 	"github.com/mailru/easyjson"
 	"net/http"
@@ -52,13 +53,20 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	srv.Logger().Info("auth id: ", authID)
-
-	_, err = srv.components.RoomsManager.GetRoom(roomID)
+	room, err := srv.components.RoomsManager.GetRoom(roomID)
 	if err != nil {
 		srv.closeConnectionWithError(conn, err)
 		return
 	}
+
+	p := players.NewPlayer(authID)
+
+	if err := room.AddPlayer(p); err != nil {
+		srv.closeConnectionWithError(conn, err)
+		return
+	}
+
+	srv.writeWebSockOk(conn)
 
 	for {
 		_ = err

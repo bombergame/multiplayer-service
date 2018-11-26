@@ -11,8 +11,8 @@ type Room struct {
 	ID             uuid.UUID `json:"id"`
 	Title          string    `json:"title"`
 	CreatedBy      int64     `json:"-"`
-	TimeLimit      int32     `json:"time_limit"`
-	MaxNumPlayers  int32     `json:"max_num_players"`
+	TimeLimit      int64     `json:"time_limit"`
+	MaxNumPlayers  int64     `json:"max_num_players"`
 	AllowAnonymous bool      `json:"allow_anonymous"`
 	FieldSize      FieldSize `json:"field_size"`
 }

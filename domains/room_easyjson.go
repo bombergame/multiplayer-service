@@ -43,9 +43,9 @@ func easyjson426b19f9DecodeGithubComBombergameMultiplayerServiceDomains(in *jlex
 		case "title":
 			out.Title = string(in.String())
 		case "time_limit":
-			out.TimeLimit = int32(in.Int32())
+			out.TimeLimit = int64(in.Int64())
 		case "max_num_players":
-			out.MaxNumPlayers = int32(in.Int32())
+			out.MaxNumPlayers = int64(in.Int64())
 		case "allow_anonymous":
 			out.AllowAnonymous = bool(in.Bool())
 		case "field_size":
@@ -94,7 +94,7 @@ func easyjson426b19f9EncodeGithubComBombergameMultiplayerServiceDomains(out *jwr
 		} else {
 			out.RawString(prefix)
 		}
-		out.Int32(int32(in.TimeLimit))
+		out.Int64(int64(in.TimeLimit))
 	}
 	{
 		const prefix string = ",\"max_num_players\":"
@@ -104,7 +104,7 @@ func easyjson426b19f9EncodeGithubComBombergameMultiplayerServiceDomains(out *jwr
 		} else {
 			out.RawString(prefix)
 		}
-		out.Int32(int32(in.MaxNumPlayers))
+		out.Int64(int64(in.MaxNumPlayers))
 	}
 	{
 		const prefix string = ",\"allow_anonymous\":"

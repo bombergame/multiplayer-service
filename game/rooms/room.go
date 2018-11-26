@@ -1,6 +1,7 @@
 package rooms
 
 import (
+	"github.com/bombergame/multiplayer-service/domains"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/satori/go.uuid"
@@ -10,6 +11,8 @@ import (
 
 const (
 	DefaultAnonymousPlayerID = -1
+
+	TickerPeriod = 20 * time.Millisecond
 )
 
 type Room struct {
@@ -17,7 +20,7 @@ type Room struct {
 	title string
 
 	state  GameState
-	ticker time.Ticker
+	ticker *time.Ticker
 
 	maxNumPlayers  int64
 	allowAnonymous bool
@@ -26,9 +29,19 @@ type Room struct {
 	mu sync.RWMutex
 }
 
-func NewRoom(id uuid.UUID) *Room {
+func NewRoom(r domains.Room) *Room {
 	return &Room{
-		id: id,
+		id:    r.ID,
+		title: r.Title,
+
+		state:  GameStatePending,
+		ticker: time.NewTicker(TickerPeriod),
+
+		maxNumPlayers:  r.MaxNumPlayers,
+		allowAnonymous: r.AllowAnonymous,
+		players:        make(map[int64]*players.Player, 0),
+
+		mu: sync.RWMutex{},
 	}
 }
 

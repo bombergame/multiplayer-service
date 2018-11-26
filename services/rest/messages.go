@@ -23,6 +23,11 @@ type RoomResponseData struct {
 }
 
 //easyjson:json
+type OkResponseData struct {
+	Message string `json:"message"`
+}
+
+//easyjson:json
 type ErrorResponseData struct {
 	Message string `json:"message"`
 }
