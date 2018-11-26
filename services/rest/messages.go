@@ -1,9 +1,18 @@
 package rest
 
+import (
+	"github.com/mailru/easyjson"
+)
+
+type Serializable interface {
+	easyjson.Marshaler
+	easyjson.Unmarshaler
+}
+
 //easyjson:json
 type WebSocketMessage struct {
-	Type string `json:"type"`
-	Data []byte `data:"data"`
+	Type string                 `json:"type"`
+	Data map[string]interface{} `data:"data"`
 }
 
 //easyjson:json

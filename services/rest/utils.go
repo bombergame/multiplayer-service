@@ -35,18 +35,11 @@ func (srv *Service) readRoomID(r *http.Request) (uuid.UUID, error) {
 }
 
 func (srv *Service) writeWebSockError(conn *websocket.Conn, err error) {
-	errResp := ErrorResponse{
-		Message: err.Error(),
-	}
-
-	data, err := easyjson.Marshal(errResp)
-	if err != nil {
-		panic(err)
-	}
-
 	msg := WebSocketMessage{
 		Type: "error",
-		Data: data,
+		Data: map[string]interface{}{
+			"message": err.Error(),
+		},
 	}
 
 	resp, err := easyjson.Marshal(msg)

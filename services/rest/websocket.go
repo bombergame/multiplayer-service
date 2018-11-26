@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"github.com/bombergame/common/consts"
 	"github.com/bombergame/common/errs"
 	"github.com/gorilla/websocket"
 	"github.com/mailru/easyjson"
@@ -58,28 +57,29 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketMessage) (int64, error) {
-	var authReqData AuthRequestData
-	if err := easyjson.Unmarshal(msg.Data, &authReqData); err != nil {
-		srv.writeWebSockError(conn, err)
-		return 0, err
-	}
-
-	srv.Logger().Info("auth request data: ", authReqData)
-
-	if authReqData.AuthToken == consts.EmptyString {
-		return -1, nil
-	}
-
-	pInfo, err := srv.components.AuthManager.GetProfileInfo(
-		authReqData.AuthToken, consts.EmptyString)
-	if err != nil {
-		srv.writeWebSockError(conn, err)
-		return 0, err
-	}
-
-	return pInfo.ID, nil
-}
+//func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketMessage) (int64, error) {
+//	var authReqData AuthRequestData
+//	if err := easyjson.Unmarshal(msg.Data, &authReqData); err != nil {
+//		srv.writeWebSockError(conn, err)
+//		return 0, err
+//	}
+//
+//	srv.Logger().Info("auth request data: ", authReqData)
+//
+//	if authReqData.AuthToken == consts.EmptyString {
+//		return -1, nil
+//	}
+//
+//	pInfo, err := srv.components.AuthManager.GetProfileInfo(
+//		authReqData.AuthToken, consts.EmptyString)
+//	if err != nil {
+//		srv.writeWebSockError(conn, err)
+//		return 0, err
+//	}
+//
+//	return pInfo.ID, nil
+//	return 0, nil
+//}
 
 func (srv *Service) closeConnectionWithError(conn *websocket.Conn, err error) {
 	srv.writeWebSockError(conn, err)
