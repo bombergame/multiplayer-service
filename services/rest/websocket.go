@@ -11,31 +11,37 @@ import (
 func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 	conn, err := srv.upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		srv.WriteErrorWithBody(w, errs.NewServiceError(err))
+		srv.closeConnectionWithError(conn, err)
 		return
 	}
 
 	roomID, err := srv.readRoomID(r)
 	if err != nil {
-		srv.writeWebSockError(conn, err)
+		srv.closeConnectionWithError(conn, err)
 		return
 	}
 
 	_, b, err := conn.ReadMessage()
 	if err != nil {
-		srv.writeWebSockError(conn, err)
+		srv.closeConnectionWithError(conn, err)
 		return
 	}
 
 	var msg WebSocketMessage
 	if err := easyjson.Unmarshal(b, &msg); err != nil {
-		srv.writeWebSockError(conn, err)
+		srv.closeConnectionWithError(conn, err)
+		return
+	}
+
+	if msg.Type != "auth" {
+		err := errs.NewNotAuthorizedError()
+		srv.closeConnectionWithError(conn, err)
 		return
 	}
 
 	_, err = srv.components.RoomsManager.GetRoom(roomID)
 	if err != nil {
-		srv.writeWebSockError(conn, err)
+		srv.closeConnectionWithError(conn, err)
 		return
 	}
 
@@ -63,4 +69,11 @@ func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketMessag
 	}
 
 	return pInfo.ID, nil
+}
+
+func (srv *Service) closeConnectionWithError(conn *websocket.Conn, err error) {
+	srv.writeWebSockError(conn, err)
+	if err := conn.Close(); err != nil {
+		srv.Logger().Error(err)
+	}
 }
