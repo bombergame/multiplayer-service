@@ -33,7 +33,7 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 
 	srv.Logger().Info("request message: ", string(b))
 
-	var msg WebSocketMessage
+	var msg WebSocketRequest
 	if err := easyjson.Unmarshal(b, &msg); err != nil {
 		srv.closeConnectionWithError(conn, err)
 		return
@@ -65,7 +65,7 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketMessage) (int64, error) {
+func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketRequest) (int64, error) {
 	var authReqData AuthRequestData
 
 	atItf, ok := msg.Data["auth_token"]

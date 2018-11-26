@@ -1,18 +1,15 @@
 package rest
 
-import (
-	"github.com/mailru/easyjson"
-)
-
-type Serializable interface {
-	easyjson.Marshaler
-	easyjson.Unmarshaler
+//easyjson:json
+type WebSocketRequest struct {
+	Type string                 `json:"type"`
+	Data map[string]interface{} `json:"data"`
 }
 
 //easyjson:json
-type WebSocketMessage struct {
-	Type string                 `json:"type"`
-	Data map[string]interface{} `json:"data"`
+type WebSocketResponse struct {
+	Type string      `json:"type"`
+	Data interface{} `json:"data"`
 }
 
 //easyjson:json
@@ -22,10 +19,10 @@ type AuthRequestData struct {
 }
 
 //easyjson:json
-type RoomDataResponse struct {
+type RoomResponseData struct {
 }
 
 //easyjson:json
-type ErrorResponse struct {
+type ErrorResponseData struct {
 	Message string `json:"message"`
 }
