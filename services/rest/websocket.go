@@ -55,11 +55,11 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 
 	srv.Logger().Info("auth id: ", authID)
 
-	//_, err = srv.components.RoomsManager.GetRoom(roomID)
-	//if err != nil {
-	//	srv.closeConnectionWithError(conn, err)
-	//	return
-	//}
+	_, err = srv.components.RoomsManager.GetRoom(roomID)
+	if err != nil {
+		srv.closeConnectionWithError(conn, err)
+		return
+	}
 
 	for {
 		_ = err
