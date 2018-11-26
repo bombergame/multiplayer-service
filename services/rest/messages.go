@@ -18,6 +18,11 @@ type WebSocketMessage struct {
 //easyjson:json
 type AuthRequestData struct {
 	AuthToken string `json:"auth_token"`
+	UserAgent string `json:"user_agent"`
+}
+
+//easyjson:json
+type RoomDataResponse struct {
 }
 
 //easyjson:json
