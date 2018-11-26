@@ -39,31 +39,7 @@ func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceServicesRest(in 
 		case "type":
 			out.Type = string(in.String())
 		case "Data":
-			if in.IsNull() {
-				in.Skip()
-			} else {
-				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.Data = make(map[string]interface{})
-				} else {
-					out.Data = nil
-				}
-				for !in.IsDelim('}') {
-					key := string(in.String())
-					in.WantColon()
-					var v1 interface{}
-					if m, ok := v1.(easyjson.Unmarshaler); ok {
-						m.UnmarshalEasyJSON(in)
-					} else if m, ok := v1.(json.Unmarshaler); ok {
-						_ = m.UnmarshalJSON(in.Raw())
-					} else {
-						v1 = in.Interface()
-					}
-					(out.Data)[key] = v1
-					in.WantComma()
-				}
-				in.Delim('}')
-			}
+			out.Data = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -96,29 +72,7 @@ func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceServicesRest(out
 		} else {
 			out.RawString(prefix)
 		}
-		if in.Data == nil && (out.Flags&jwriter.NilMapAsEmpty) == 0 {
-			out.RawString(`null`)
-		} else {
-			out.RawByte('{')
-			v2First := true
-			for v2Name, v2Value := range in.Data {
-				if v2First {
-					v2First = false
-				} else {
-					out.RawByte(',')
-				}
-				out.String(string(v2Name))
-				out.RawByte(':')
-				if m, ok := v2Value.(easyjson.Marshaler); ok {
-					m.MarshalEasyJSON(out)
-				} else if m, ok := v2Value.(json.Marshaler); ok {
-					out.Raw(m.MarshalJSON())
-				} else {
-					out.Raw(json.Marshal(v2Value))
-				}
-			}
-			out.RawByte('}')
-		}
+		out.String(string(in.Data))
 	}
 	out.RawByte('}')
 }
