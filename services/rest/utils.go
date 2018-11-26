@@ -5,6 +5,8 @@ import (
 	"github.com/bombergame/common/consts"
 	"github.com/bombergame/common/errs"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
+	"github.com/mailru/easyjson"
 	"github.com/satori/go.uuid"
 	"net/http"
 )
@@ -30,4 +32,30 @@ func (srv *Service) readRoomID(r *http.Request) (uuid.UUID, error) {
 	}
 
 	return id, nil
+}
+
+func (srv *Service) writeWebSockError(conn *websocket.Conn, err error) {
+	errResp := ErrorResponse{
+		Message: err.Error(),
+	}
+
+	data, err := easyjson.Marshal(errResp)
+	if err != nil {
+		panic(err)
+	}
+
+	msg := WebSocketMessage{
+		Type: "error",
+		Data: data,
+	}
+
+	resp, err := easyjson.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := conn.WriteJSON(resp); err != nil {
+		srv.Logger().Error(err)
+		return
+	}
 }
