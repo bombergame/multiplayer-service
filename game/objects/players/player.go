@@ -1,12 +1,12 @@
-package player
+package players
 
 import (
 	"github.com/bombergame/multiplayer-service/game/components/collider"
 	"github.com/bombergame/multiplayer-service/game/components/movement"
 	"github.com/bombergame/multiplayer-service/game/components/transform"
 	"github.com/bombergame/multiplayer-service/game/objects"
-	"github.com/bombergame/multiplayer-service/game/objects/player/commands"
-	"github.com/bombergame/multiplayer-service/game/objects/player/state"
+	"github.com/bombergame/multiplayer-service/game/objects/players/commands"
+	"github.com/bombergame/multiplayer-service/game/objects/players/state"
 	"github.com/bombergame/multiplayer-service/game/physics"
 )
 

@@ -1,4 +1,4 @@
-package wall
+package walls
 
 import (
 	"github.com/bombergame/multiplayer-service/game/objects"
