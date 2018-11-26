@@ -47,7 +47,7 @@ func (srv *Service) writeWebSockError(conn *websocket.Conn, err error) {
 		panic(err)
 	}
 
-	if err := conn.WriteJSON(resp); err != nil {
+	if err := conn.WriteMessage(0, resp); err != nil {
 		srv.Logger().Error(err)
 		return
 	}
