@@ -44,12 +44,16 @@ func NewService(cf Config, cpn Components) *Service {
 		},
 	}
 
+	headers := handlers.AllowedHeaders([]string{"Authorization", "User-Agent", "Content-Type"})
+	origins := handlers.AllowedOrigins([]string{"http://localhost:8000"})
+	methods := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
 	mx := mux.NewRouter()
 	mx.Handle(RoomsPath, handlers.MethodHandler{
-		http.MethodPost: srv.WithAuth(http.HandlerFunc(srv.createRoom)),
+		http.MethodPost: handlers.CORS(headers, origins, methods)(srv.WithAuth(http.HandlerFunc(srv.createRoom))),
 	})
 	mx.Handle(RoomPath, handlers.MethodHandler{
-		http.MethodDelete: srv.WithAuth(http.HandlerFunc(srv.deleteRoom)),
+		http.MethodDelete: handlers.CORS(headers, origins, methods)(srv.WithAuth(http.HandlerFunc(srv.deleteRoom))),
 	})
 	mx.Handle(RoomPath+"/ws", http.HandlerFunc(srv.handleGameplay))
 
