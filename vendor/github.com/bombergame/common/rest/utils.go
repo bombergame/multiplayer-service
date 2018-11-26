@@ -2,10 +2,11 @@ package rest
 
 import (
 	"bufio"
-	"encoding/json"
 	"errors"
 	"github.com/bombergame/common/consts"
 	"github.com/bombergame/common/errs"
+	"github.com/mailru/easyjson"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"strconv"
@@ -48,11 +49,24 @@ func (srv *Service) ReadHeader(r *http.Request, name string) (string, error) {
 	return v, nil
 }
 
-func (srv *Service) ReadRequestBody(v interface{}, r *http.Request) error {
-	err := json.NewDecoder(r.Body).Decode(v)
+func (srv *Service) ReadRequestBody(v easyjson.Unmarshaler, r *http.Request) error {
+	const wrongFormatMessage = "wrong request body format"
+
+	body, err := ioutil.ReadAll(r.Body)
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			panic(err)
+		}
+	}()
 	if err != nil {
-		return errs.NewInvalidFormatError("wrong request body format")
+		return errs.NewInvalidFormatError(wrongFormatMessage)
 	}
+
+	err = easyjson.Unmarshal(body, v)
+	if err != nil {
+		return errs.NewInvalidFormatError(wrongFormatMessage)
+	}
+
 	return nil
 }
 
@@ -60,7 +74,7 @@ func (srv *Service) WriteOk(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (srv *Service) WriteOkWithBody(w http.ResponseWriter, v interface{}) {
+func (srv *Service) WriteOkWithBody(w http.ResponseWriter, v easyjson.Marshaler) {
 	srv.writeJSON(w, http.StatusOK, v)
 }
 
@@ -103,13 +117,22 @@ func (srv *Service) WriteErrorWithBody(w http.ResponseWriter, err error) {
 func (srv *Service) writeText(w http.ResponseWriter, status int, txt string) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(status)
-	w.Write([]byte(txt))
+	if _, err := w.Write([]byte(txt)); err != nil {
+		panic(err)
+	}
 }
 
-func (srv *Service) writeJSON(w http.ResponseWriter, status int, v interface{}) {
+func (srv *Service) writeJSON(w http.ResponseWriter, status int, v easyjson.Marshaler) {
+	b, err := easyjson.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
+	if _, err := w.Write(b); err != nil {
+		panic(err)
+	}
 }
 
 func (srv *Service) ReadAuthProfileID(r *http.Request) (int64, error) {
@@ -131,13 +154,15 @@ func (srv *Service) ReadUserAgent(r *http.Request) (string, error) {
 }
 
 func (srv *Service) ReadAuthToken(r *http.Request) (string, error) {
+	const prefix = "Bearer "
+
 	bearer, err := srv.ReadHeader(r, AuthorizationHeader)
 	if err != nil {
 		return consts.EmptyString, err
 	}
 
-	n := len("Bearer ")
-	if len(bearer) <= n {
+	n := len(prefix)
+	if len(bearer) <= n || bearer[:n] != prefix {
 		return consts.EmptyString, errs.NewInvalidFormatError("wrong authorization token")
 	}
 

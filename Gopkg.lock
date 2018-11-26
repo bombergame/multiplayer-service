@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:83771eb042af5e12e41b3d2280adbe76b4240a382a6aa810974b8940241462b6"
+  digest = "1:e89b71a9f5adf83c5674ab95ed0e4560c4a646c1ef833035813dd38a64442039"
   name = "github.com/bombergame/common"
   packages = [
     "args",
@@ -14,7 +14,7 @@
     "rest",
   ]
   pruneopts = "UT"
-  revision = "62cb8f4b32800e4c2ba9068924e1f12fbeeb7386"
+  revision = "36af138760c000f8d61a16d5de660c3fd77133ae"
 
 [[projects]]
   digest = "1:c79fb010be38a59d657c48c6ba1d003a8aa651fa56b579d959d74573b7dff8e1"
@@ -70,14 +70,6 @@
   revision = "60711f1a8329503b04e1c88535f419d0bb440bff"
 
 [[projects]]
-  digest = "1:53bc4cd4914cd7cd52139990d5170d6dc99067ae31c56530621b18b35fc30318"
-  name = "github.com/mitchellh/mapstructure"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
-  version = "v1.1.2"
-
-[[projects]]
   digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
   name = "github.com/satori/go.uuid"
   packages = ["."]
@@ -95,11 +87,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:05ef6e1391a5b99e8c004a126bc23a207fdccc6ff5c4c175a791bf4882595379"
+  digest = "1:38f553aff0273ad6f367cb0a0f8b6eecbaef8dc6cb8b50e57b6a81c1d5b1e332"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "9eb0be3963eaeb646c9a9b6d11f3da2b249bb2ca"
+  revision = "e657309f52e71501f9934566ac06dc5c2f7f11a1"
 
 [[projects]]
   branch = "master"
@@ -128,7 +120,6 @@
     "github.com/mailru/easyjson",
     "github.com/mailru/easyjson/jlexer",
     "github.com/mailru/easyjson/jwriter",
-    "github.com/mitchellh/mapstructure",
     "github.com/satori/go.uuid",
   ]
   solver-name = "gps-cdcl"

@@ -44,20 +44,23 @@ func NewService(cf Config, cpn Components) *Service {
 		},
 	}
 
-	headers := handlers.AllowedHeaders([]string{"Authorization", "User-Agent", "Content-Type"})
-	origins := handlers.AllowedOrigins([]string{"http://localhost:8000"})
-	methods := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-
 	mx := mux.NewRouter()
 	mx.Handle(RoomsPath, handlers.MethodHandler{
-		http.MethodPost: handlers.CORS(headers, origins, methods)(srv.WithAuth(http.HandlerFunc(srv.createRoom))),
+		http.MethodPost: srv.WithAuth(http.HandlerFunc(srv.createRoom)),
 	})
 	mx.Handle(RoomPath, handlers.MethodHandler{
-		http.MethodDelete: handlers.CORS(headers, origins, methods)(srv.WithAuth(http.HandlerFunc(srv.deleteRoom))),
+		http.MethodDelete: srv.WithAuth(http.HandlerFunc(srv.deleteRoom)),
 	})
 	mx.Handle(RoomPath+"/ws", http.HandlerFunc(srv.handleGameplay))
 
-	srv.SetHandler(srv.WithLogs(srv.WithRecover(mx)))
+	cors := rest.CORS{
+		Origins:     []string{"http://locahost:8000"},
+		Methods:     []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodOptions},
+		Headers:     []string{"User-Agent", "Authorization", "Content-Type", "Content-Length"},
+		Credentials: true,
+	}
+
+	srv.SetHandler(srv.WithLogs(srv.WithCORS(srv.WithRecover(mx), cors)))
 
 	return srv
 }
