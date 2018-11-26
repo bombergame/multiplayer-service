@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:223a794cf7de8e82e9f490cf57a26c96e5c2d7d408ab24c42fe13cccbd237c3e"
+  digest = "1:83771eb042af5e12e41b3d2280adbe76b4240a382a6aa810974b8940241462b6"
   name = "github.com/bombergame/common"
   packages = [
     "args",
@@ -14,7 +14,7 @@
     "rest",
   ]
   pruneopts = "UT"
-  revision = "a185686fd003ef3f8c66aee1f294c125082e7185"
+  revision = "62cb8f4b32800e4c2ba9068924e1f12fbeeb7386"
 
 [[projects]]
   digest = "1:c79fb010be38a59d657c48c6ba1d003a8aa651fa56b579d959d74573b7dff8e1"
@@ -87,11 +87,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
+  digest = "1:05ef6e1391a5b99e8c004a126bc23a207fdccc6ff5c4c175a791bf4882595379"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "3d3f9f413869b949e48070b5bc593aa22cc2b8f2"
+  revision = "9eb0be3963eaeb646c9a9b6d11f3da2b249bb2ca"
 
 [[projects]]
   branch = "master"

@@ -15,11 +15,15 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	srv.Logger().Info("connection upgraded")
+
 	roomID, err := srv.readRoomID(r)
 	if err != nil {
 		srv.closeConnectionWithError(conn, err)
 		return
 	}
+
+	srv.Logger().Info("room id: ", roomID)
 
 	_, b, err := conn.ReadMessage()
 	if err != nil {
@@ -27,11 +31,15 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	srv.Logger().Info("request message: ", string(b))
+
 	var msg WebSocketMessage
 	if err := easyjson.Unmarshal(b, &msg); err != nil {
 		srv.closeConnectionWithError(conn, err)
 		return
 	}
+
+	srv.Logger().Info("message: ", msg)
 
 	if msg.Type != "auth" {
 		err := errs.NewNotAuthorizedError()
@@ -56,6 +64,8 @@ func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketMessag
 		srv.writeWebSockError(conn, err)
 		return 0, err
 	}
+
+	srv.Logger().Info("auth request data: ", authReqData)
 
 	if authReqData.AuthToken == consts.EmptyString {
 		return -1, nil

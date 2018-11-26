@@ -1,10 +1,12 @@
 package rest
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"github.com/bombergame/common/consts"
 	"github.com/bombergame/common/errs"
+	"net"
 	"net/http"
 	"strconv"
 )
@@ -31,6 +33,10 @@ func (w *LoggingResponseWriter) Write(b []byte) (int, error) {
 func (w *LoggingResponseWriter) WriteHeader(status int) {
 	w.status = status
 	w.writer.WriteHeader(status)
+}
+
+func (w *LoggingResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	return w.writer.(http.Hijacker).Hijack()
 }
 
 func (srv *Service) ReadHeader(r *http.Request, name string) (string, error) {
