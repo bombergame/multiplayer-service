@@ -38,7 +38,7 @@ func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceServicesRest(in 
 		switch key {
 		case "type":
 			out.Type = string(in.String())
-		case "Data":
+		case "data":
 			out.Data = string(in.String())
 		default:
 			in.SkipRecursive()
@@ -65,7 +65,7 @@ func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceServicesRest(out
 		out.String(string(in.Type))
 	}
 	{
-		const prefix string = ",\"Data\":"
+		const prefix string = ",\"data\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])
