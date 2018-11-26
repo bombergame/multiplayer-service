@@ -109,7 +109,10 @@
   analyzer-version = 1
   input-imports = [
     "github.com/bombergame/common/args",
+    "github.com/bombergame/common/auth",
+    "github.com/bombergame/common/consts",
     "github.com/bombergame/common/errs",
+    "github.com/bombergame/common/logs",
     "github.com/bombergame/common/rest",
     "github.com/gorilla/handlers",
     "github.com/gorilla/mux",

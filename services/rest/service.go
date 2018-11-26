@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"github.com/bombergame/common/consts"
 	"github.com/bombergame/common/rest"
 	"github.com/bombergame/multiplayer-service/config"
 	"github.com/bombergame/multiplayer-service/utils"
@@ -27,7 +28,7 @@ type Components struct {
 }
 
 func NewService(cf Config, cpn Components) *Service {
-	cf.Host, cf.Port = "", config.HttpPort
+	cf.Host, cf.Port = consts.EmptyString, config.HttpPort
 
 	srv := &Service{
 		Service: *rest.NewService(
@@ -37,8 +38,9 @@ func NewService(cf Config, cpn Components) *Service {
 		config:     cf,
 		components: cpn,
 		upgrader: websocket.Upgrader{
-			ReadBufferSize:  1024,
-			WriteBufferSize: 1024,
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
 		},
 	}
 
