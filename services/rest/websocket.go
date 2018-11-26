@@ -6,6 +6,7 @@ import (
 	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/gorilla/websocket"
 	"github.com/mailru/easyjson"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 )
 
@@ -76,35 +77,25 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketRequest) (int64, error) {
 	var authReqData AuthRequestData
 
-	atItf, ok := msg.Data["auth_token"]
-	if !ok {
-		return 0, errs.NewInvalidFormatError("no auth_token field")
+	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
+		Result: &authReqData, TagName: "json",
+	})
+	if err != nil {
+		return consts.AnyInt, errs.NewServiceError(err)
 	}
 
-	authReqData.AuthToken, ok = atItf.(string)
-	if !ok {
-		return 0, errs.NewInvalidFormatError("wrong auth_token field")
+	if err := decoder.Decode(&msg.Data); err != nil {
+		return consts.AnyInt, errs.NewInvalidFormatError("wrong auth message")
 	}
 
-	agItf, ok := msg.Data["user_agent"]
-	if !ok {
-		return 0, errs.NewInvalidFormatError("no user_agent field")
-	}
-
-	authReqData.UserAgent, ok = agItf.(string)
-	if !ok {
-		return 0, errs.NewInvalidFormatError("wrong user_agent field")
-	}
-
-	if atItf == consts.EmptyString {
+	if authReqData.AuthToken == consts.EmptyString {
 		return -1, nil
 	}
 
 	pInfo, err := srv.components.AuthManager.GetProfileInfo(
 		authReqData.AuthToken, authReqData.UserAgent)
 	if err != nil {
-		srv.writeWebSockError(conn, err)
-		return 0, err
+		return consts.AnyInt, err
 	}
 
 	return pInfo.ID, nil
