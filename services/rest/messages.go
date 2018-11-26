@@ -11,8 +11,8 @@ type Serializable interface {
 
 //easyjson:json
 type WebSocketMessage struct {
-	Type string `json:"type"`
-	Data string `json:"data"`
+	Type string                 `json:"type"`
+	Data map[string]interface{} `json:"data"`
 }
 
 //easyjson:json

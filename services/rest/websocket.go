@@ -5,6 +5,7 @@ import (
 	"github.com/bombergame/common/errs"
 	"github.com/gorilla/websocket"
 	"github.com/mailru/easyjson"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 )
 
@@ -67,8 +68,7 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 
 func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketMessage) (int64, error) {
 	var authReqData AuthRequestData
-	if err := easyjson.Unmarshal([]byte(msg.Data), &authReqData); err != nil {
-		srv.writeWebSockError(conn, err)
+	if err := mapstructure.Decode(msg.Data, &authReqData); err != nil {
 		return 0, err
 	}
 
