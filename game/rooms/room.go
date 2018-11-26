@@ -1,10 +1,15 @@
 package rooms
 
 import (
+	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/satori/go.uuid"
 	"sync"
 	"time"
+)
+
+const (
+	DefaultAnonymousPlayerID = -1
 )
 
 type Room struct {
@@ -14,7 +19,9 @@ type Room struct {
 	state  GameState
 	ticker time.Ticker
 
-	players map[int64]*players.Player
+	maxNumPlayers  int64
+	allowAnonymous bool
+	players        map[int64]*players.Player
 
 	mu sync.RWMutex
 }
@@ -30,5 +37,34 @@ func (r *Room) Id() uuid.UUID {
 }
 
 func (r *Room) AddPlayer(p *players.Player) error {
-	return nil //TODO
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if r.state != GameStatePending {
+		return errs.NewGameError("game already started")
+	}
+
+	if int64(len(r.players)) == r.maxNumPlayers {
+		return errs.NewGameError("players limit exceeded")
+	}
+
+	if p.ID() == DefaultAnonymousPlayerID {
+		if !r.allowAnonymous {
+			return errs.NewGameError("anonymous not allowed")
+		}
+		p.SetID(r.findFreeAnonID())
+	}
+
+	r.players[p.ID()] = p
+	return nil
+}
+
+func (r *Room) findFreeAnonID() int64 {
+	var i int64
+	for i = 1; i < r.maxNumPlayers; i++ {
+		if _, ok := r.players[i]; !ok {
+			return i
+		}
+	}
+	return 0
 }

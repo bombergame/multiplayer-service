@@ -29,6 +29,14 @@ func NewPlayer(id int64) *Player {
 	}
 }
 
+func (p *Player) ID() int64 {
+	return p.id
+}
+
+func (p *Player) SetID(id int64) {
+	p.id = id
+}
+
 func (p *Player) Type() objects.ObjectType {
 	return objects.Player
 }
