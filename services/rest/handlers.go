@@ -25,7 +25,7 @@ func (srv *Service) createRoom(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mRoom.ID = uuid.NewV4()
-	room := rooms.NewRoom(mRoom.ID)
+	room := rooms.NewRoom(mRoom)
 
 	srv.Logger().Info("room id: ", mRoom.ID)
 
