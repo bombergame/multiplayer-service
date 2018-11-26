@@ -27,8 +27,6 @@ func (srv *Service) createRoom(w http.ResponseWriter, r *http.Request) {
 	mRoom.ID = uuid.NewV4()
 	room := rooms.NewRoom(mRoom)
 
-	srv.Logger().Info("room id: ", mRoom.ID)
-
 	err = srv.components.RoomsManager.AddRoom(room)
 	if err != nil {
 		srv.WriteErrorWithBody(w, err)
