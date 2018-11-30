@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:223a794cf7de8e82e9f490cf57a26c96e5c2d7d408ab24c42fe13cccbd237c3e"
+  digest = "1:4195a4f707b896a3426edc4dd25834165f9c5ff238e52177ee342013cfac832b"
   name = "github.com/bombergame/common"
   packages = [
     "args",
@@ -14,7 +14,7 @@
     "rest",
   ]
   pruneopts = "UT"
-  revision = "a185686fd003ef3f8c66aee1f294c125082e7185"
+  revision = "a47a5e48e060d1345b3abe244f19a4218952b0c8"
 
 [[projects]]
   digest = "1:c79fb010be38a59d657c48c6ba1d003a8aa651fa56b579d959d74573b7dff8e1"
@@ -47,6 +47,19 @@
   pruneopts = "UT"
   revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
   version = "v1.0.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:aa3d8d42865c42626b5c1add193692d045b3188b1479f0a0a88690d21fe20083"
+  name = "github.com/mailru/easyjson"
+  packages = [
+    ".",
+    "buffer",
+    "jlexer",
+    "jwriter",
+  ]
+  pruneopts = "UT"
+  revision = "60711f1a8329503b04e1c88535f419d0bb440bff"
 
 [[projects]]
   digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
