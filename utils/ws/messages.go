@@ -1,33 +1,40 @@
-package rest
+package ws
+
+//go:generate easyjson
 
 //easyjson:json
-type WebSocketRequest struct {
+type InMessage struct {
 	Type string                 `json:"type"`
 	Data map[string]interface{} `json:"data"`
 }
 
 //easyjson:json
-type WebSocketResponse struct {
+type OutMessage struct {
 	Type string      `json:"type"`
 	Data interface{} `json:"data"`
 }
 
 //easyjson:json
-type AuthRequestData struct {
+type AuthMessageData struct {
 	AuthToken string `json:"auth_token"`
 	UserAgent string `json:"user_agent"`
 }
 
 //easyjson:json
-type RoomResponseData struct {
+type RoomMessageData struct {
+	State   string  `json:"state"`
+	Players []int64 `json:"players"`
 }
 
 //easyjson:json
-type OkResponseData struct {
+type OkMessageData struct {
 	Message string `json:"message"`
 }
 
 //easyjson:json
-type ErrorResponseData struct {
+type ErrorMessageData struct {
 	Message string `json:"message"`
 }
+
+type InChan chan InMessage
+type OutChan chan OutMessage

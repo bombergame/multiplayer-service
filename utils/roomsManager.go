@@ -23,11 +23,11 @@ func (rm *RoomsManager) AddRoom(r *rooms.Room) error {
 	rm.rwMutex.Lock()
 	defer rm.rwMutex.Unlock()
 
-	if _, ok := rm.rooms[r.Id()]; ok {
+	if _, ok := rm.rooms[r.ID()]; ok {
 		return errs.NewDuplicateError("room already exists")
 	}
 
-	rm.rooms[r.Id()] = r
+	rm.rooms[r.ID()] = r
 	return nil
 }
 

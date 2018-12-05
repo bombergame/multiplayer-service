@@ -4,6 +4,7 @@ import (
 	"github.com/bombergame/common/consts"
 	"github.com/bombergame/common/errs"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
+	"github.com/bombergame/multiplayer-service/utils/ws"
 	"github.com/gorilla/websocket"
 	"github.com/mailru/easyjson"
 	"github.com/mitchellh/mapstructure"
@@ -35,7 +36,7 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 
 	srv.Logger().Info("request message: ", string(b))
 
-	var msg WebSocketRequest
+	var msg ws.InMessage
 	if err := easyjson.Unmarshal(b, &msg); err != nil {
 		srv.closeConnectionWithError(conn, err)
 		return
@@ -60,18 +61,28 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	outChan := make(ws.OutChan, 10)
+
 	p := players.NewPlayer(authID)
+	p.SetOutChan(&outChan)
 
 	if err := room.AddPlayer(p); err != nil {
 		srv.closeConnectionWithError(conn, err)
 		return
 	}
 
-	srv.writeWebSockOk(conn)
+	for {
+		select {
+		case c := <-outChan:
+			srv.writeWebSockJSON(conn, c)
+		default:
+			return
+		}
+	}
 }
 
-func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketRequest) (int64, error) {
-	var authReqData AuthRequestData
+func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *ws.InMessage) (int64, error) {
+	var authReqData ws.AuthMessageData
 
 	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
 		Result: &authReqData, TagName: "json",

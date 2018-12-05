@@ -4,6 +4,7 @@ import (
 	"github.com/bombergame/multiplayer-service/domains"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
+	"github.com/bombergame/multiplayer-service/utils/ws"
 	"github.com/satori/go.uuid"
 	"sync"
 	"time"
@@ -15,6 +16,8 @@ const (
 	TickerPeriod = 20 * time.Millisecond
 )
 
+type BroadcastChan chan ws.OutMessage
+
 type Room struct {
 	id    uuid.UUID
 	title string
@@ -25,6 +28,8 @@ type Room struct {
 	maxNumPlayers  int64
 	allowAnonymous bool
 	players        map[int64]*players.Player
+
+	broadcastChan chan ws.OutMessage
 
 	mu sync.RWMutex
 }
@@ -45,7 +50,7 @@ func NewRoom(r domains.Room) *Room {
 	}
 }
 
-func (r *Room) Id() uuid.UUID {
+func (r *Room) ID() uuid.UUID {
 	return r.id
 }
 
@@ -69,6 +74,8 @@ func (r *Room) AddPlayer(p *players.Player) error {
 	}
 
 	r.players[p.ID()] = p
+	r.broadcastState()
+
 	return nil
 }
 
@@ -80,4 +87,27 @@ func (r *Room) findFreeAnonID() int64 {
 		}
 	}
 	return 0
+}
+
+func (r *Room) broadcastState() {
+	p := make([]int64, len(r.players))
+	for id := range r.players {
+		p = append(p, id)
+	}
+
+	message := ws.OutMessage{
+		Type: "game",
+		Data: ws.RoomMessageData{
+			State:   r.state.ToString(),
+			Players: p,
+		},
+	}
+
+	r.broadcast(message)
+}
+
+func (r *Room) broadcast(message ws.OutMessage) {
+	for _, p := range r.players {
+		*p.OutChan() <- message
+	}
 }

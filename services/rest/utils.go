@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/bombergame/common/consts"
 	"github.com/bombergame/common/errs"
+	"github.com/bombergame/multiplayer-service/utils/ws"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/mailru/easyjson"
@@ -35,18 +36,18 @@ func (srv *Service) readRoomID(r *http.Request) (uuid.UUID, error) {
 }
 
 func (srv *Service) writeWebSockOk(conn *websocket.Conn) {
-	srv.writeWebSockJSON(conn, &WebSocketResponse{
+	srv.writeWebSockJSON(conn, &ws.OutMessage{
 		Type: "ok",
-		Data: OkResponseData{
+		Data: ws.OkMessageData{
 			Message: "ok",
 		},
 	})
 }
 
 func (srv *Service) writeWebSockError(conn *websocket.Conn, err error) {
-	srv.writeWebSockJSON(conn, &WebSocketResponse{
+	srv.writeWebSockJSON(conn, &ws.OutMessage{
 		Type: "error",
-		Data: ErrorResponseData{
+		Data: ws.ErrorMessageData{
 			Message: err.Error(),
 		},
 	})
