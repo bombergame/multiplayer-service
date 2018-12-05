@@ -68,10 +68,6 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	srv.writeWebSockOk(conn)
-
-	for {
-		_ = err
-	}
 }
 
 func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *WebSocketRequest) (int64, error) {

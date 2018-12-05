@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b7d505f5e94e53f5902323c7cd930f875d90d0b3fe6f59fb2516e9de6353e913"
+  digest = "1:4195a4f707b896a3426edc4dd25834165f9c5ff238e52177ee342013cfac832b"
   name = "github.com/bombergame/common"
   packages = [
     "args",
@@ -14,7 +14,7 @@
     "rest",
   ]
   pruneopts = "UT"
-  revision = "01a55c2f8435f64acbb060e946cccd871b7291b7"
+  revision = "a47a5e48e060d1345b3abe244f19a4218952b0c8"
 
 [[projects]]
   digest = "1:c79fb010be38a59d657c48c6ba1d003a8aa651fa56b579d959d74573b7dff8e1"
@@ -99,18 +99,18 @@
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "e657309f52e71501f9934566ac06dc5c2f7f11a1"
+  revision = "eb0de9b17e854e9b1ccd9963efafc79862359959"
 
 [[projects]]
   branch = "master"
-  digest = "1:f343f077a5b0bc3a3788b3a04e24dd417e3e25b2acb529c413e212d2c42416ef"
+  digest = "1:0c7cb58af944f9690af91474a75371eecfe54c1ce3771a8dc08924430ee785d3"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "62eef0e2fa9b2c385f7b2778e763486da6880d37"
+  revision = "4ed8d59d0b35e1e29334a206d1b3f38b1e5dfb31"
 
 [solve-meta]
   analyzer-name = "dep"
