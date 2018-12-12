@@ -7,6 +7,7 @@ import (
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	time "time"
 )
 
 // suppress unused package warning
@@ -17,7 +18,78 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs(in *jlexer.Lexer, out *RoomMessageData) {
+func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs(in *jlexer.Lexer, out *TickerMessageData) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeString()
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "value":
+			out.Value = time.Duration(in.Int64())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs(out *jwriter.Writer, in TickerMessageData) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"value\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int64(int64(in.Value))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v TickerMessageData) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v TickerMessageData) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *TickerMessageData) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *TickerMessageData) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs(l, v)
+}
+func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs1(in *jlexer.Lexer, out *RoomMessageData) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -73,7 +145,7 @@ func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs(in *jlex
 		in.Consumed()
 	}
 }
-func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs(out *jwriter.Writer, in RoomMessageData) {
+func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs1(out *jwriter.Writer, in RoomMessageData) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -124,27 +196,27 @@ func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs(out *jwr
 // MarshalJSON supports json.Marshaler interface
 func (v RoomMessageData) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs(&w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs1(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v RoomMessageData) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs(w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs1(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *RoomMessageData) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs(&r, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs1(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *RoomMessageData) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs(l, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs1(l, v)
 }
-func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs1(in *jlexer.Lexer, out *OutMessage) {
+func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs2(in *jlexer.Lexer, out *OutMessage) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -183,7 +255,7 @@ func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs1(in *jle
 		in.Consumed()
 	}
 }
-func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs1(out *jwriter.Writer, in OutMessage) {
+func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs2(out *jwriter.Writer, in OutMessage) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -219,27 +291,27 @@ func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs1(out *jw
 // MarshalJSON supports json.Marshaler interface
 func (v OutMessage) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs1(&w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs2(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v OutMessage) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs1(w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs2(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *OutMessage) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs1(&r, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs2(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *OutMessage) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs1(l, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs2(l, v)
 }
-func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs2(in *jlexer.Lexer, out *OkMessageData) {
+func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs3(in *jlexer.Lexer, out *OkMessageData) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -270,7 +342,7 @@ func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs2(in *jle
 		in.Consumed()
 	}
 }
-func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs2(out *jwriter.Writer, in OkMessageData) {
+func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs3(out *jwriter.Writer, in OkMessageData) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -290,27 +362,27 @@ func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs2(out *jw
 // MarshalJSON supports json.Marshaler interface
 func (v OkMessageData) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs2(&w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs3(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v OkMessageData) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs2(w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs3(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *OkMessageData) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs2(&r, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs3(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *OkMessageData) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs2(l, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs3(l, v)
 }
-func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs3(in *jlexer.Lexer, out *InMessage) {
+func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs4(in *jlexer.Lexer, out *InMessage) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -367,7 +439,7 @@ func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs3(in *jle
 		in.Consumed()
 	}
 }
-func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs3(out *jwriter.Writer, in InMessage) {
+func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs4(out *jwriter.Writer, in InMessage) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -419,27 +491,27 @@ func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs3(out *jw
 // MarshalJSON supports json.Marshaler interface
 func (v InMessage) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs3(&w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs4(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v InMessage) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs3(w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs4(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *InMessage) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs3(&r, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs4(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *InMessage) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs3(l, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs4(l, v)
 }
-func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs4(in *jlexer.Lexer, out *ErrorMessageData) {
+func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs5(in *jlexer.Lexer, out *ErrorMessageData) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -470,7 +542,7 @@ func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs4(in *jle
 		in.Consumed()
 	}
 }
-func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs4(out *jwriter.Writer, in ErrorMessageData) {
+func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs5(out *jwriter.Writer, in ErrorMessageData) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -490,27 +562,27 @@ func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs4(out *jw
 // MarshalJSON supports json.Marshaler interface
 func (v ErrorMessageData) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs4(&w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs5(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ErrorMessageData) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs4(w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs5(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *ErrorMessageData) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs4(&r, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs5(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ErrorMessageData) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs4(l, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs5(l, v)
 }
-func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs5(in *jlexer.Lexer, out *AuthMessageData) {
+func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs6(in *jlexer.Lexer, out *AuthMessageData) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -543,7 +615,7 @@ func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs5(in *jle
 		in.Consumed()
 	}
 }
-func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs5(out *jwriter.Writer, in AuthMessageData) {
+func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs6(out *jwriter.Writer, in AuthMessageData) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -573,23 +645,23 @@ func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs5(out *jw
 // MarshalJSON supports json.Marshaler interface
 func (v AuthMessageData) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs5(&w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs6(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v AuthMessageData) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs5(w, v)
+	easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs6(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *AuthMessageData) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs5(&r, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs6(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *AuthMessageData) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs5(l, v)
+	easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs6(l, v)
 }

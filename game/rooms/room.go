@@ -16,7 +16,7 @@ import (
 const (
 	DefaultAnonymousPlayerID = -1
 
-	TickerPeriod = 20 * time.Millisecond
+	TickerPeriod = 50 * time.Millisecond
 )
 
 type Room struct {
@@ -24,6 +24,8 @@ type Room struct {
 	title string
 
 	state  gamestate.State
+
+	tLimit time.Duration
 	ticker *time.Ticker
 
 	maxNumPlayers  int64
@@ -36,11 +38,13 @@ type Room struct {
 }
 
 func NewRoom(r domains.Room) *Room {
-	return &Room{
+	room := &Room{
 		id:    r.ID,
 		title: r.Title,
 
 		state:  gamestate.Pending,
+
+		tLimit: /*time.Duration(r.TimeLimit) * */time.Minute / 3, //TODO
 		ticker: time.NewTicker(TickerPeriod),
 
 		maxNumPlayers:  r.MaxNumPlayers,
@@ -51,6 +55,8 @@ func NewRoom(r domains.Room) *Room {
 
 		mu: sync.RWMutex{},
 	}
+	//room.startGame() //TODO
+	return room
 }
 
 func (r *Room) ID() uuid.UUID {
@@ -162,6 +168,26 @@ func (r *Room) findFreeAnonID() int64 {
 	return 0
 }
 
+func (r *Room) gameLoop() {
+	tStart:= <- r.ticker.C
+	//tPrev := tStart //TODO
+
+	for tCur := range r.ticker.C {
+		r.mu.Lock()
+
+		if r.state == gamestate.On {
+			t := tCur.Sub(tStart)
+			if t > r.tLimit {
+				break
+			}
+
+			r.broadcastTicker(t)
+		}
+
+		r.mu.Unlock()
+	}
+}
+
 func (r *Room) broadcastState() {
 	p := make([]int64, 0)
 	for id := range r.players {
@@ -180,15 +206,19 @@ func (r *Room) broadcastState() {
 	r.broadcast(message)
 }
 
+func (r *Room) broadcastTicker(t time.Duration) {
+	message := ws.OutMessage{
+		Type: ws.TickerMessageType,
+		Data: ws.TickerMessageData{
+			Value: t,
+		},
+	}
+	r.broadcast(message)
+}
+
 func (r *Room) broadcast(message ws.OutMessage) {
 	log.Println("Broadcast message: ", message)
 	for _, p := range r.players {
 		*p.OutChan() <- message
-	}
-}
-
-func (r *Room) gameLoop() {
-	for {
-		break //TODO
 	}
 }

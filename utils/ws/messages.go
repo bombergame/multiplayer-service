@@ -1,5 +1,7 @@
 package ws
 
+import "time"
+
 //go:generate easyjson
 
 //easyjson:json
@@ -16,7 +18,9 @@ type OutMessage struct {
 
 const (
 	AuthMessageType = "auth"
+
 	RoomMessageType = "room"
+	TickerMessageType = "ticker"
 
 	OkMessageType    = "ok"
 	ErrorMessageType = "error"
@@ -33,6 +37,11 @@ type RoomMessageData struct {
 	Title   string  `json:"title"`
 	State   string  `json:"state"`
 	Players []int64 `json:"players"`
+}
+
+//easyjson:json
+type TickerMessageData struct {
+	Value time.Duration `json:"value"`
 }
 
 //easyjson:json
