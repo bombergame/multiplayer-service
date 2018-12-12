@@ -59,19 +59,13 @@ func (r *Room) AddPlayer(p *players.Player) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	log.Println("AddPlayer(): start")
-
 	if r.state != GameStatePending {
 		return errs.NewGameError("game already started")
 	}
 
-	log.Println("AddPlayer(): checked state")
-
 	if int64(len(r.players)) == r.maxNumPlayers {
 		return errs.NewGameError("players limit exceeded")
 	}
-
-	log.Println("AddPlayer(): checked max players")
 
 	if p.ID() == DefaultAnonymousPlayerID {
 		if !r.allowAnonymous {
@@ -80,12 +74,35 @@ func (r *Room) AddPlayer(p *players.Player) error {
 		p.SetID(r.findFreeAnonID())
 	}
 
-	log.Println("AddPlayer(): handled anonymous")
-
 	r.players[p.ID()] = p
 	r.broadcastState()
 
 	return nil
+}
+
+func (r *Room) DeletePlayer(p *players.Player) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	delete(r.players, p.ID())
+}
+
+func (r *Room) StartGame() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if r.state != GameStatePending {
+		return
+	}
+
+	r.state = GameStateOn
+	r.broadcastState()
+
+	go r.gameLoop()
+}
+
+func (r *Room) StopGame() {
+	//TODO
 }
 
 func (r *Room) findFreeAnonID() int64 {
@@ -107,6 +124,7 @@ func (r *Room) broadcastState() {
 	message := ws.OutMessage{
 		Type: "game",
 		Data: ws.RoomMessageData{
+			Title:   r.title,
 			State:   r.state.ToString(),
 			Players: p,
 		},
@@ -119,5 +137,11 @@ func (r *Room) broadcast(message ws.OutMessage) {
 	log.Println("Broadcast message: ", message)
 	for _, p := range r.players {
 		*p.OutChan() <- message
+	}
+}
+
+func (r *Room) gameLoop() {
+	for {
+		break //TODO
 	}
 }

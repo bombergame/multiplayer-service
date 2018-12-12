@@ -1,13 +1,12 @@
 package commands
 
-type Command int8
-
 const (
-	Stop      = 0
-	MoveUp    = 1
-	MoveDown  = 2
-	MoveLeft  = 3
-	MoveRight = 4
-)
+	GameStart = "game.start"
+	GameStop  = "game.stop"
 
-type Chan chan Command
+	PlayerStop      = "player.stop"
+	PlayerMoveUp    = "player.move.up"
+	PlayerMoveDown  = "player.move.down"
+	PlayerMoveLeft  = "player.move.left"
+	PlayerMoveRight = "player.move.right"
+)

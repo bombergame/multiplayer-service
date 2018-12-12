@@ -22,6 +22,7 @@ type AuthMessageData struct {
 
 //easyjson:json
 type RoomMessageData struct {
+	Title   string  `json:"title"`
 	State   string  `json:"state"`
 	Players []int64 `json:"players"`
 }

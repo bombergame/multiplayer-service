@@ -4,6 +4,7 @@ import (
 	"github.com/bombergame/common/consts"
 	"github.com/bombergame/common/errs"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
+	"github.com/bombergame/multiplayer-service/game/objects/players/commands"
 	"github.com/bombergame/multiplayer-service/utils/ws"
 	"github.com/gorilla/websocket"
 	"github.com/mailru/easyjson"
@@ -19,15 +20,11 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	srv.Logger().Info("connection upgraded")
-
 	roomID, err := srv.readRoomID(r)
 	if err != nil {
 		srv.closeConnectionWithError(conn, err)
 		return
 	}
-
-	srv.Logger().Info("room id: ", roomID)
 
 	_, b, err := conn.ReadMessage()
 	if err != nil {
@@ -35,15 +32,11 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	srv.Logger().Info("request message: ", string(b))
-
 	var msg ws.InMessage
 	if err := easyjson.Unmarshal(b, &msg); err != nil {
 		srv.closeConnectionWithError(conn, err)
 		return
 	}
-
-	srv.Logger().Info("message: ", msg)
 
 	if msg.Type != "auth" {
 		err := errs.NewNotAuthorizedError()
@@ -51,14 +44,10 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	srv.Logger().Info("Auth message received")
-
 	authID, err := srv.handleAuthRequest(conn, &msg)
 	if err != nil {
 		return
 	}
-
-	srv.Logger().Info("Auth message handled")
 
 	room, err := srv.components.RoomsManager.GetRoom(roomID)
 	if err != nil {
@@ -66,11 +55,11 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	srv.Logger().Info("Auth message received")
-
-	outChan := make(ws.OutChan, 10)
-
 	p := players.NewPlayer(authID)
+
+	cmdChan := make(ws.CmdChan, 10)
+	outChan := make(ws.OutChan, 10)
+	p.SetCmdChan(&cmdChan)
 	p.SetOutChan(&outChan)
 
 	if err := room.AddPlayer(p); err != nil {
@@ -92,12 +81,19 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 
 	go func() {
 		for {
-			_, _, err := conn.ReadMessage()
+			_, p, err := conn.ReadMessage()
 			if err != nil {
 				srv.closeConnectionWithError(conn, err)
 				wg.Done()
 				return
 			}
+			switch ws.Command(p) {
+			case commands.GameStart:
+				room.StartGame()
+			case commands.GameStop:
+				room.StopGame()
+			}
+			cmdChan <- ws.Command(p)
 		}
 	}()
 

@@ -36,6 +36,8 @@ func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs(in *jlex
 			continue
 		}
 		switch key {
+		case "title":
+			out.Title = string(in.String())
 		case "state":
 			out.State = string(in.String())
 		case "players":
@@ -75,6 +77,16 @@ func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs(out *jwr
 	out.RawByte('{')
 	first := true
 	_ = first
+	{
+		const prefix string = ",\"title\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Title))
+	}
 	{
 		const prefix string = ",\"state\":"
 		if first {

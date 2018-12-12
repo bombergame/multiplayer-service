@@ -5,10 +5,11 @@ import (
 	"github.com/bombergame/multiplayer-service/game/components/movement"
 	"github.com/bombergame/multiplayer-service/game/components/transform"
 	"github.com/bombergame/multiplayer-service/game/objects"
-	"github.com/bombergame/multiplayer-service/game/objects/players/commands"
 	"github.com/bombergame/multiplayer-service/game/objects/players/state"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"github.com/bombergame/multiplayer-service/utils/ws"
+	"log"
+	"sync"
 )
 
 type Player struct {
@@ -19,15 +20,18 @@ type Player struct {
 	transform transform.Transform
 	collider  collider.Collider
 
-	cmdChan *commands.Chan
+	cmdChan *ws.CmdChan
 	outChan *ws.OutChan
 
 	checkCollision objects.CollisionChecker
+
+	mu *sync.Mutex
 }
 
 func NewPlayer(id int64) *Player {
 	return &Player{
 		id: id,
+		mu: &sync.Mutex{},
 	}
 }
 
@@ -51,7 +55,7 @@ func (p *Player) Transform() transform.Transform {
 	return p.transform
 }
 
-func (p *Player) SetCmdChan(cmdChan *commands.Chan) {
+func (p *Player) SetCmdChan(cmdChan *ws.CmdChan) {
 	p.cmdChan = cmdChan
 }
 
@@ -98,17 +102,6 @@ func (p *Player) handleCommands() {
 	}
 }
 
-func (p *Player) handleCommand(c commands.Command) {
-	switch c {
-	case commands.Stop:
-		p.movement.SpeedVec = physics.GetSpeedVec2DZeros()
-	case commands.MoveUp:
-		p.movement.SpeedVec = physics.GetSpeedVec2D(0, p.movement.Speed)
-	case commands.MoveDown:
-		p.movement.SpeedVec = physics.GetSpeedVec2D(0, -p.movement.Speed)
-	case commands.MoveLeft:
-		p.movement.SpeedVec = physics.GetSpeedVec2D(-p.movement.Speed, 0)
-	case commands.MoveRight:
-		p.movement.SpeedVec = physics.GetSpeedVec2D(p.movement.Speed, 0)
-	}
+func (p *Player) handleCommand(c ws.Command) {
+	log.Println(c)
 }
