@@ -69,7 +69,7 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 			var obj objects.GameObject
 			if prob < WeakWallProb {
 				obj = weakwalls.NewWall()
-			} else if prob < SolidWallProb {
+			} else {
 				obj = solidwalls.NewWall()
 			}
 
