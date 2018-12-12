@@ -34,10 +34,10 @@ func (r *Room) Validate() error {
 		return errs.NewInvalidFormatError("max number of players out of range")
 	}
 	if r.FieldSize.Width < 10 || r.FieldSize.Width > 100 {
-		return errs.NewInvalidFormatError("field width out of range")
+		return errs.NewInvalidFormatError("fields width out of range")
 	}
 	if r.FieldSize.Height < 10 || r.FieldSize.Height > 100 {
-		return errs.NewInvalidFormatError("field height out of range")
+		return errs.NewInvalidFormatError("fields height out of range")
 	}
 	return nil
 }

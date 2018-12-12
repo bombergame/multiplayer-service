@@ -3,6 +3,7 @@ package rooms
 import (
 	"github.com/bombergame/multiplayer-service/domains"
 	"github.com/bombergame/multiplayer-service/game/errs"
+	"github.com/bombergame/multiplayer-service/game/fields"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/bombergame/multiplayer-service/game/rooms/commands"
 	"github.com/bombergame/multiplayer-service/game/rooms/state"
@@ -28,6 +29,8 @@ type Room struct {
 	tLimit time.Duration
 	ticker *time.Ticker
 
+	field *fields.Field
+
 	maxNumPlayers  int64
 	allowAnonymous bool
 	players        map[int64]*players.Player
@@ -38,7 +41,7 @@ type Room struct {
 }
 
 func NewRoom(r domains.Room) *Room {
-	room := &Room{
+	return &Room{
 		id:    r.ID,
 		title: r.Title,
 
@@ -46,6 +49,11 @@ func NewRoom(r domains.Room) *Room {
 
 		tLimit: time.Duration(r.TimeLimit) * time.Minute,
 		ticker: time.NewTicker(TickerPeriod),
+
+		field: fields.NewField(fields.Size{
+			Width:  r.FieldSize.Width,
+			Height: r.FieldSize.Height,
+		}),
 
 		maxNumPlayers:  r.MaxNumPlayers,
 		allowAnonymous: r.AllowAnonymous,
@@ -55,7 +63,6 @@ func NewRoom(r domains.Room) *Room {
 
 		mu: sync.RWMutex{},
 	}
-	return room
 }
 
 func (r *Room) ID() uuid.UUID {
@@ -124,7 +131,7 @@ func (r *Room) startGame() {
 	case gamestate.Pending:
 		r.state = gamestate.On
 
-		//TODO: generate field
+		//TODO: generate fields
 		go r.gameLoop()
 
 	case gamestate.Paused:
