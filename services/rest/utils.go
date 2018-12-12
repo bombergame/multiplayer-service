@@ -54,6 +54,8 @@ func (srv *Service) writeWebSockError(conn *websocket.Conn, err error) {
 }
 
 func (srv *Service) writeWebSockJSON(conn *websocket.Conn, v easyjson.Marshaler) {
+	srv.Logger().Info("JSON message:", v)
+
 	resp, err := easyjson.Marshal(v)
 	if err != nil {
 		panic(err)
