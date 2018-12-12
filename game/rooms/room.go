@@ -209,7 +209,7 @@ func (r *Room) broadcastTicker(t time.Duration) {
 	message := ws.OutMessage{
 		Type: ws.TickerMessageType,
 		Data: ws.TickerMessageData{
-			Value: t.Seconds(),
+			Value: r.tLimit.Seconds() - t.Seconds(),
 		},
 	}
 	r.broadcast(message)
