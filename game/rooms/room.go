@@ -131,7 +131,7 @@ func (r *Room) startGame() {
 	case gamestate.Pending:
 		r.state = gamestate.On
 
-		//TODO: generate fields
+		r.field.GenerateRandom(int32(r.maxNumPlayers))
 		go r.gameLoop()
 
 	case gamestate.Paused:
