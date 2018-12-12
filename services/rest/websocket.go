@@ -75,8 +75,6 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		select {
 		case c := <-outChan:
 			srv.writeWebSockJSON(conn, c)
-		default:
-			return
 		}
 	}
 }
