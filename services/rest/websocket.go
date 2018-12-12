@@ -87,13 +87,17 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 				wg.Done()
 				return
 			}
-			switch ws.Command(p) {
+
+			cmd := ws.Command(p)
+
+			switch cmd {
 			case commands.GameStart:
 				room.StartGame()
 			case commands.GameStop:
 				room.StopGame()
+			default:
+				cmdChan <- cmd
 			}
-			cmdChan <- ws.Command(p)
 		}
 	}()
 
