@@ -96,13 +96,13 @@ func (p *Player) handleCommands() {
 	for {
 		select {
 		case c := <-(*p.cmdChan):
-			p.handleCommand(c)
+			p.handleCmd(c)
 		default:
 			return
 		}
 	}
 }
 
-func (p *Player) handleCommand(c ws.Command) {
+func (p *Player) handleCmd(c playercommands.Cmd) {
 	log.Println(c)
 }
