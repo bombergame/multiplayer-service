@@ -41,6 +41,7 @@ func (w *Wall) Transform() transform.Transform {
 
 func (w *Wall) Spawn(position physics.PositionVec2D) {
 	w.transform.Position = position
+	w.changeHandler(w)
 }
 
 func (w *Wall) Update(duration time.Duration) {

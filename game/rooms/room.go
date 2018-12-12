@@ -6,6 +6,7 @@ import (
 	"github.com/bombergame/multiplayer-service/game/fields"
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
+	"github.com/bombergame/multiplayer-service/game/physics"
 	"github.com/bombergame/multiplayer-service/game/rooms/commands"
 	"github.com/bombergame/multiplayer-service/game/rooms/state"
 	"github.com/bombergame/multiplayer-service/utils/ws"
@@ -52,10 +53,10 @@ func NewRoom(r domains.Room) *Room {
 		tLimit: time.Duration(r.TimeLimit) * time.Minute,
 		ticker: time.NewTicker(TickerPeriod),
 
-		field: fields.NewField(fields.Size{
-			Width:  r.FieldSize.Width,
-			Height: r.FieldSize.Height,
-		}),
+		field: fields.NewField(physics.GetSize2D(
+			physics.Integer(r.FieldSize.Width),
+			physics.Integer(r.FieldSize.Height),
+		)),
 
 		maxNumPlayers:  r.MaxNumPlayers,
 		allowAnonymous: r.AllowAnonymous,
@@ -133,7 +134,16 @@ func (r *Room) startGame() {
 	case gamestate.Pending:
 		r.state = gamestate.On
 
-		r.field.SpawnObjects(int32(r.maxNumPlayers))
+		h := func(obj objects.GameObject) {
+			r.broadcast(ws.OutMessage{
+				Type: string(obj.Type()),
+				Data: obj.Serialize(),
+			})
+		}
+
+		r.field.SpawnPlayers(r.players)
+		r.field.SpawnObjects(h)
+
 		go r.gameLoop()
 
 	case gamestate.Paused:
