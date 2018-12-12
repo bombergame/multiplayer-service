@@ -1,12 +1,18 @@
-package commands
+package playercommands
+
+type Cmd string
 
 const (
-	GameStart = "game.start"
-	GameStop  = "game.stop"
+	Prefix    = "player."
+	Stop      = Prefix + "stop"
+	MoveUp    = Prefix + "move.up"
+	MoveDown  = Prefix + "move.down"
+	MoveLeft  = Prefix + "move.left"
+	MoveRight = Prefix + "move.right"
+)
 
-	PlayerStop      = "player.stop"
-	PlayerMoveUp    = "player.move.up"
-	PlayerMoveDown  = "player.move.down"
-	PlayerMoveLeft  = "player.move.left"
-	PlayerMoveRight = "player.move.right"
+type CmdChan chan Cmd
+
+const (
+	ChanLen = 10
 )

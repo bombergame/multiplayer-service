@@ -33,6 +33,7 @@ func (srv *Service) createRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	room.RunGame()
 	srv.WriteOkWithBody(w, mRoom)
 }
 

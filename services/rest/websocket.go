@@ -5,11 +5,13 @@ import (
 	"github.com/bombergame/common/errs"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/bombergame/multiplayer-service/game/objects/players/commands"
+	"github.com/bombergame/multiplayer-service/game/rooms/commands"
 	"github.com/bombergame/multiplayer-service/utils/ws"
 	"github.com/gorilla/websocket"
 	"github.com/mailru/easyjson"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"strings"
 	"sync"
 )
 
@@ -38,7 +40,7 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if msg.Type != "auth" {
+	if msg.Type != ws.AuthMessageType {
 		err := errs.NewNotAuthorizedError()
 		srv.closeConnectionWithError(conn, err)
 		return
@@ -57,9 +59,10 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 
 	p := players.NewPlayer(authID)
 
-	cmdChan := make(ws.CmdChan, 10)
-	outChan := make(ws.OutChan, 10)
+	cmdChan := make(playercommands.CmdChan, playercommands.ChanLen)
 	p.SetCmdChan(&cmdChan)
+
+	outChan := make(ws.OutChan, ws.OutChanLen)
 	p.SetOutChan(&outChan)
 
 	if err := room.AddPlayer(p); err != nil {
@@ -88,15 +91,12 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			cmd := ws.Command(p)
-
-			switch cmd {
-			case commands.GameStart:
-				room.StartGame()
-			case commands.GameStop:
-				room.StopGame()
-			default:
-				cmdChan <- cmd
+			cmd := string(p)
+			if strings.HasPrefix(cmd, gamecommands.Prefix) {
+				*room.CmdChan() <- gamecommands.Cmd(cmd)
+			}
+			if strings.HasPrefix(cmd, playercommands.Prefix) {
+				cmdChan <- playercommands.Cmd(cmd)
 			}
 		}
 	}()

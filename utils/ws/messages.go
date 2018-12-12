@@ -14,6 +14,14 @@ type OutMessage struct {
 	Data interface{} `json:"data"`
 }
 
+const (
+	AuthMessageType = "auth"
+	RoomMessageType = "room"
+
+	OkMessageType    = "ok"
+	ErrorMessageType = "error"
+)
+
 //easyjson:json
 type AuthMessageData struct {
 	AuthToken string `json:"auth_token"`
@@ -37,5 +45,8 @@ type ErrorMessageData struct {
 	Message string `json:"message"`
 }
 
-type InChan chan InMessage
 type OutChan chan OutMessage
+
+const (
+	OutChanLen = 10
+)

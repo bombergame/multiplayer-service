@@ -5,6 +5,7 @@ import (
 	"github.com/bombergame/multiplayer-service/game/components/movement"
 	"github.com/bombergame/multiplayer-service/game/components/transform"
 	"github.com/bombergame/multiplayer-service/game/objects"
+	"github.com/bombergame/multiplayer-service/game/objects/players/commands"
 	"github.com/bombergame/multiplayer-service/game/objects/players/state"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"github.com/bombergame/multiplayer-service/utils/ws"
@@ -14,13 +15,13 @@ import (
 
 type Player struct {
 	id    int64
-	state state.State
+	state playerstate.State
 
 	movement  movement.Movement
 	transform transform.Transform
 	collider  collider.Collider
 
-	cmdChan *ws.CmdChan
+	cmdChan *playercommands.CmdChan
 	outChan *ws.OutChan
 
 	checkCollision objects.CollisionChecker
@@ -55,7 +56,7 @@ func (p *Player) Transform() transform.Transform {
 	return p.transform
 }
 
-func (p *Player) SetCmdChan(cmdChan *ws.CmdChan) {
+func (p *Player) SetCmdChan(cmdChan *playercommands.CmdChan) {
 	p.cmdChan = cmdChan
 }
 
@@ -69,7 +70,7 @@ func (p *Player) SetCollisionChecker(f objects.CollisionChecker) {
 
 func (p *Player) Start() {
 	p.spawn()
-	p.state = state.Alive
+	p.state = playerstate.Alive
 }
 
 func (p *Player) Update(timeDiff physics.Time) {

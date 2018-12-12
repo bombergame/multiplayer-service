@@ -4,6 +4,8 @@ import (
 	"github.com/bombergame/multiplayer-service/domains"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
+	"github.com/bombergame/multiplayer-service/game/rooms/commands"
+	"github.com/bombergame/multiplayer-service/game/rooms/state"
 	"github.com/bombergame/multiplayer-service/utils/ws"
 	"github.com/satori/go.uuid"
 	"log"
@@ -17,20 +19,18 @@ const (
 	TickerPeriod = 20 * time.Millisecond
 )
 
-type BroadcastChan chan ws.OutMessage
-
 type Room struct {
 	id    uuid.UUID
 	title string
 
-	state  GameState
+	state  gamestate.State
 	ticker *time.Ticker
 
 	maxNumPlayers  int64
 	allowAnonymous bool
 	players        map[int64]*players.Player
 
-	broadcastChan chan ws.OutMessage
+	cmdChan gamecommands.CmdChan
 
 	mu sync.RWMutex
 }
@@ -40,12 +40,14 @@ func NewRoom(r domains.Room) *Room {
 		id:    r.ID,
 		title: r.Title,
 
-		state:  GameStatePending,
+		state:  gamestate.Pending,
 		ticker: time.NewTicker(TickerPeriod),
 
 		maxNumPlayers:  r.MaxNumPlayers,
 		allowAnonymous: r.AllowAnonymous,
 		players:        make(map[int64]*players.Player, 0),
+
+		cmdChan: make(gamecommands.CmdChan, gamecommands.ChanLen),
 
 		mu: sync.RWMutex{},
 	}
@@ -55,11 +57,31 @@ func (r *Room) ID() uuid.UUID {
 	return r.id
 }
 
+func (r *Room) CmdChan() *gamecommands.CmdChan {
+	return &r.cmdChan
+}
+
+func (r *Room) RunGame() {
+	for {
+		select {
+		case c := <-r.cmdChan:
+			switch c {
+			case gamecommands.Start:
+				r.startGame()
+			case gamecommands.Stop:
+				r.stopGame()
+			case gamecommands.End:
+				r.endGame()
+			}
+		}
+	}
+}
+
 func (r *Room) AddPlayer(p *players.Player) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if r.state != GameStatePending {
+	if r.state != gamestate.Pending {
 		return errs.NewGameError("game already started")
 	}
 
@@ -87,22 +109,45 @@ func (r *Room) DeletePlayer(p *players.Player) {
 	delete(r.players, p.ID())
 }
 
-func (r *Room) StartGame() {
+func (r *Room) startGame() {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if r.state != GameStatePending {
+	switch r.state {
+	case gamestate.Pending:
+		r.state = gamestate.On
+
+		//TODO: generate field
+		go r.gameLoop()
+
+	case gamestate.Paused:
+		r.state = gamestate.On
+
+	default:
 		return
 	}
 
-	r.state = GameStateOn
 	r.broadcastState()
-
-	go r.gameLoop()
 }
 
-func (r *Room) StopGame() {
-	//TODO
+func (r *Room) stopGame() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if r.state != gamestate.On {
+		return
+	}
+
+	r.state = gamestate.Paused
+	r.broadcastState()
+}
+
+func (r *Room) endGame() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	r.state = gamestate.Off
+	r.broadcastState()
 }
 
 func (r *Room) findFreeAnonID() int64 {
@@ -122,7 +167,7 @@ func (r *Room) broadcastState() {
 	}
 
 	message := ws.OutMessage{
-		Type: "game",
+		Type: ws.RoomMessageType,
 		Data: ws.RoomMessageData{
 			Title:   r.title,
 			State:   r.state.ToString(),
