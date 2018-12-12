@@ -28,6 +28,8 @@ type Player struct {
 	cmdChan *playercommands.CmdChan
 	outChan *ws.OutChan
 
+	changeHandler objects.ChangeHandler
+
 	mu *sync.Mutex
 }
 
@@ -83,6 +85,25 @@ func (p *Player) Update(duration time.Duration) {
 	p.handleCommands()
 }
 
+func (p *Player) SetChangeHandler(h objects.ChangeHandler) {
+	p.changeHandler = h
+}
+
+//easyjson:json
+type MessageData struct {
+	ObjectID  objects.ID          `json:"object_id"`
+	State     playerstate.State   `json:"state"`
+	Transform transform.Transform `json:"transform"`
+}
+
+func (p *Player) Serialize() interface{} {
+	return MessageData{
+		ObjectID:  p.objectID,
+		State:     p.state,
+		Transform: p.transform,
+	}
+}
+
 func (p *Player) moveTo(pos physics.PositionVec2D) {
 	//TODO
 	p.transform.Position = pos
@@ -118,20 +139,3 @@ func (p *Player) handleCmd(c playercommands.Cmd) {
 		p.moveTo(p.transform.Position.Right(MovementStep))
 	}
 }
-
-//easyjson:json
-type playerMessageData struct {
-	ObjectID  int64               `json:"object_id"`
-	State     playerstate.State   `json:"state"`
-	Transform transform.Transform `json:"transform"`
-}
-
-//func (p *Player) serialize() ws.OutMessage {
-//	return ws.OutMessage{
-//		Type: Type,
-//		Data: playerMessageData{
-//			ID:    p.id,
-//			State: p.state,
-//		},
-//	}
-//}

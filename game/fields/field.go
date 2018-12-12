@@ -3,6 +3,8 @@ package fields
 import (
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
+	"github.com/bombergame/multiplayer-service/game/objects/walls/solid"
+	"github.com/bombergame/multiplayer-service/game/objects/walls/weak"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"math/rand"
 )
@@ -46,21 +48,36 @@ const (
 	SolidWallProb = 1.0
 )
 
-func (f *Field) SpawnObjects() {
+func (f *Field) SpawnObjects(h objects.ChangeHandler) {
+	objID := objects.ID(0)
+
 	for i := physics.Integer(0); i < f.size.Height; i++ {
 		for j := physics.Integer(0); j < f.size.Width; j++ {
+			objID++
+
 			if f.cells[i][j] != nil {
 				continue
 			}
 
 			prob := rand.NormFloat64()
+
 			if prob < EmptyProb {
 				f.cells[i][j] = nil
-			} else if prob < WeakWallProb {
-				//f.cells[i][j] = walls.NewWeakWall()
-			} else if prob < SolidWallProb {
-				//f.cells[i][j] = walls.NewSolidWall()
+				continue
 			}
+
+			var obj objects.GameObject
+			if prob < WeakWallProb {
+				obj = weakwalls.NewWall()
+			} else if prob < SolidWallProb {
+				obj = solidwalls.NewWall()
+			}
+
+			obj.SetObjectID(objID)
+			obj.SetChangeHandler(h)
+			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(i), physics.Coordinate(j)))
+
+			f.cells[i][j] = obj
 		}
 	}
 }

@@ -6,12 +6,20 @@ import (
 	"time"
 )
 
+type ChangeHandler func(obj GameObject)
+
 type GameObject interface {
 	Type() ObjectType
+
 	ObjectID() ID
+	SetObjectID(ID)
 
 	Transform() transform.Transform
 
 	Spawn(physics.PositionVec2D)
 	Update(time.Duration)
+
+	SetChangeHandler(ChangeHandler)
+
+	Serialize() interface{}
 }
