@@ -99,7 +99,7 @@ func (r *Room) findFreeAnonID() int64 {
 }
 
 func (r *Room) broadcastState() {
-	p := make([]int64, len(r.players))
+	p := make([]int64, 0)
 	for id := range r.players {
 		p = append(p, id)
 	}
