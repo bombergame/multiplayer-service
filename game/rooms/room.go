@@ -62,19 +62,21 @@ func (r *Room) CmdChan() *gamecommands.CmdChan {
 }
 
 func (r *Room) RunGame() {
-	for {
-		select {
-		case c := <-r.cmdChan:
-			switch c {
-			case gamecommands.Start:
-				r.startGame()
-			case gamecommands.Stop:
-				r.stopGame()
-			case gamecommands.End:
-				r.endGame()
+	go func() {
+		for {
+			select {
+			case c := <-r.cmdChan:
+				switch c {
+				case gamecommands.Start:
+					r.startGame()
+				case gamecommands.Stop:
+					r.stopGame()
+				case gamecommands.End:
+					r.endGame()
+				}
 			}
 		}
-	}
+	}()
 }
 
 func (r *Room) AddPlayer(p *players.Player) error {
