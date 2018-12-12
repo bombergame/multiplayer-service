@@ -124,6 +124,7 @@ func (r *Room) DeletePlayer(p *players.Player) {
 	defer r.mu.Unlock()
 
 	delete(r.players, p.ID())
+	r.broadcastState()
 }
 
 func (r *Room) startGame() {

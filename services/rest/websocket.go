@@ -84,14 +84,15 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 
 	go func() {
 		for {
-			_, p, err := conn.ReadMessage()
+			_, data, err := conn.ReadMessage()
 			if err != nil {
 				srv.closeConnectionWithError(conn, err)
+				room.DeletePlayer(p)
 				wg.Done()
 				return
 			}
 
-			cmd := string(p)
+			cmd := string(data)
 			if strings.HasPrefix(cmd, gamecommands.Prefix) {
 				*room.CmdChan() <- gamecommands.Cmd(cmd)
 			}
