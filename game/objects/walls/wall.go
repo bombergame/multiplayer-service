@@ -58,9 +58,13 @@ type MessageData struct {
 	Transform transform.Transform `json:"transform"`
 }
 
-func (w *Wall) Serialize() interface{} {
+func (w *Wall) GetMessageData() MessageData {
 	return MessageData{
 		ObjectID:  w.objectID,
 		Transform: w.transform,
 	}
+}
+
+func (w *Wall) Serialize() interface{} {
+	return w.GetMessageData()
 }
