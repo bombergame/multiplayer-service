@@ -7,7 +7,6 @@ import (
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
-	time "time"
 )
 
 // suppress unused package warning
@@ -38,7 +37,7 @@ func easyjson66c1e240DecodeGithubComBombergameMultiplayerServiceUtilsWs(in *jlex
 		}
 		switch key {
 		case "value":
-			out.Value = time.Duration(in.Int64())
+			out.Value = float64(in.Float64())
 		default:
 			in.SkipRecursive()
 		}
@@ -61,7 +60,7 @@ func easyjson66c1e240EncodeGithubComBombergameMultiplayerServiceUtilsWs(out *jwr
 		} else {
 			out.RawString(prefix)
 		}
-		out.Int64(int64(in.Value))
+		out.Float64(float64(in.Value))
 	}
 	out.RawByte('}')
 }

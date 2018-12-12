@@ -23,7 +23,7 @@ type Room struct {
 	id    uuid.UUID
 	title string
 
-	state  gamestate.State
+	state gamestate.State
 
 	tLimit time.Duration
 	ticker *time.Ticker
@@ -42,9 +42,9 @@ func NewRoom(r domains.Room) *Room {
 		id:    r.ID,
 		title: r.Title,
 
-		state:  gamestate.Pending,
+		state: gamestate.Pending,
 
-		tLimit: /*time.Duration(r.TimeLimit) * */time.Minute / 3, //TODO
+		tLimit: time.Duration(r.TimeLimit) * time.Minute,
 		ticker: time.NewTicker(TickerPeriod),
 
 		maxNumPlayers:  r.MaxNumPlayers,
@@ -55,7 +55,6 @@ func NewRoom(r domains.Room) *Room {
 
 		mu: sync.RWMutex{},
 	}
-	//room.startGame() //TODO
 	return room
 }
 
@@ -169,7 +168,7 @@ func (r *Room) findFreeAnonID() int64 {
 }
 
 func (r *Room) gameLoop() {
-	tStart:= <- r.ticker.C
+	tStart := <-r.ticker.C
 	//tPrev := tStart //TODO
 
 	for tCur := range r.ticker.C {
@@ -210,7 +209,7 @@ func (r *Room) broadcastTicker(t time.Duration) {
 	message := ws.OutMessage{
 		Type: ws.TickerMessageType,
 		Data: ws.TickerMessageData{
-			Value: t,
+			Value: t.Seconds(),
 		},
 	}
 	r.broadcast(message)
