@@ -8,6 +8,12 @@ type SolidWall struct {
 	Wall
 }
 
+func NewSolidWall() *SolidWall {
+	return &SolidWall{
+		Wall: *NewWall(),
+	}
+}
+
 func (w *SolidWall) Type() objects.ObjectType {
 	return objects.WallSolid
 }

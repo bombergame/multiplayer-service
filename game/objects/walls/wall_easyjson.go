@@ -136,7 +136,7 @@ func easyjson783c1624DecodeGithubComBombergameMultiplayerServiceGameComponentsCo
 		}
 		switch key {
 		case "Radius":
-			out.Radius = physics.Float(in.Float64())
+			out.Radius = physics.Integer(in.Float64())
 		default:
 			in.SkipRecursive()
 		}

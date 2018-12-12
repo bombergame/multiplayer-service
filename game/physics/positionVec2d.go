@@ -1,5 +1,8 @@
 package physics
 
+//go:generate easyjson
+
+//easyjson:json
 type PositionVec2D struct {
 	Vec2D
 }
@@ -12,8 +15,18 @@ func GetPositionVec2DZeros() PositionVec2D {
 	return GetPositionVec2D(0, 0)
 }
 
-func (v *PositionVec2D) Translate(sp SpeedVec2D, t Time) *PositionVec2D {
-	v.X += Coordinate(Float(sp.X) * Float(t))
-	v.Y += Coordinate(Float(sp.Y) * Float(t))
-	return v
+func (p PositionVec2D) Up(d Coordinate) PositionVec2D {
+	return GetPositionVec2D(p.X, p.Y-d)
+}
+
+func (p PositionVec2D) Down(d Coordinate) PositionVec2D {
+	return GetPositionVec2D(p.X, p.Y+d)
+}
+
+func (p PositionVec2D) Left(d Coordinate) PositionVec2D {
+	return GetPositionVec2D(p.X-1, p.Y)
+}
+
+func (p PositionVec2D) Right(d Coordinate) PositionVec2D {
+	return GetPositionVec2D(p.X+1, p.Y)
 }

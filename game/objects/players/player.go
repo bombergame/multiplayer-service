@@ -1,30 +1,32 @@
 package players
 
+//go:generate easyjson
+
 import (
-	"github.com/bombergame/multiplayer-service/game/components/collider"
-	"github.com/bombergame/multiplayer-service/game/components/movement"
 	"github.com/bombergame/multiplayer-service/game/components/transform"
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/players/commands"
 	"github.com/bombergame/multiplayer-service/game/objects/players/state"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"github.com/bombergame/multiplayer-service/utils/ws"
-	"log"
 	"sync"
+	"time"
+)
+
+const (
+	Type = "player"
 )
 
 type Player struct {
-	id    int64
-	state playerstate.State
+	id int64
 
-	movement  movement.Movement
+	objectID objects.ID
+	state    playerstate.State
+
 	transform transform.Transform
-	collider  collider.Collider
 
 	cmdChan *playercommands.CmdChan
 	outChan *ws.OutChan
-
-	checkCollision objects.CollisionChecker
 
 	mu *sync.Mutex
 }
@@ -40,6 +42,10 @@ func (p *Player) ID() int64 {
 	return p.id
 }
 
+func (p *Player) ObjectID() objects.ID {
+	return p.objectID
+}
+
 func (p *Player) OutChan() *ws.OutChan {
 	return p.outChan
 }
@@ -48,8 +54,12 @@ func (p *Player) SetID(id int64) {
 	p.id = id
 }
 
+func (p *Player) SetObjectID(id objects.ID) {
+	p.objectID = id
+}
+
 func (p *Player) Type() objects.ObjectType {
-	return objects.Player
+	return Type
 }
 
 func (p *Player) Transform() transform.Transform {
@@ -64,32 +74,18 @@ func (p *Player) SetOutChan(outChan *ws.OutChan) {
 	p.outChan = outChan
 }
 
-func (p *Player) SetCollisionChecker(f objects.CollisionChecker) {
-	p.checkCollision = f
-}
-
-func (p *Player) Start() {
-	p.spawn()
+func (p *Player) Spawn(pos physics.PositionVec2D) {
 	p.state = playerstate.Alive
+	p.transform.Position = pos
 }
 
-func (p *Player) Update(timeDiff physics.Time) {
+func (p *Player) Update(duration time.Duration) {
 	p.handleCommands()
-	p.move(timeDiff)
 }
 
-func (p *Player) spawn() {
+func (p *Player) moveTo(pos physics.PositionVec2D) {
 	//TODO
-}
-
-func (p *Player) move(timeDiff physics.Time) {
-	prevPosVec := p.transform.Position
-	p.transform.Position.Translate(p.movement.SpeedVec, timeDiff)
-
-	if p.checkCollision(p.transform, p.collider) != nil {
-		p.transform.Position = prevPosVec
-		p.movement.SpeedVec = physics.GetSpeedVec2DZeros()
-	}
+	p.transform.Position = pos
 }
 
 func (p *Player) handleCommands() {
@@ -103,6 +99,39 @@ func (p *Player) handleCommands() {
 	}
 }
 
+const (
+	MovementStep = 1
+)
+
 func (p *Player) handleCmd(c playercommands.Cmd) {
-	log.Println(c)
+	switch c {
+	case playercommands.MoveUp:
+		p.moveTo(p.transform.Position.Up(MovementStep))
+
+	case playercommands.MoveDown:
+		p.moveTo(p.transform.Position.Down(MovementStep))
+
+	case playercommands.MoveLeft:
+		p.moveTo(p.transform.Position.Left(MovementStep))
+
+	case playercommands.MoveRight:
+		p.moveTo(p.transform.Position.Right(MovementStep))
+	}
 }
+
+//easyjson:json
+type playerMessageData struct {
+	ObjectID  int64               `json:"object_id"`
+	State     playerstate.State   `json:"state"`
+	Transform transform.Transform `json:"transform"`
+}
+
+//func (p *Player) serialize() ws.OutMessage {
+//	return ws.OutMessage{
+//		Type: Type,
+//		Data: playerMessageData{
+//			ID:    p.id,
+//			State: p.state,
+//		},
+//	}
+//}

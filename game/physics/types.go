@@ -1,7 +1,4 @@
 package physics
 
-type Float float64
-
-type Coordinate Float
-type Time Float
-type Speed Float
+type Integer int32
+type Coordinate Integer

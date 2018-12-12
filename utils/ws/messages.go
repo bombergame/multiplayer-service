@@ -2,6 +2,10 @@ package ws
 
 //go:generate easyjson
 
+import (
+	"github.com/bombergame/multiplayer-service/game/objects"
+)
+
 //easyjson:json
 type InMessage struct {
 	Type string                 `json:"type"`
@@ -14,10 +18,15 @@ type OutMessage struct {
 	Data interface{} `json:"data"`
 }
 
+type OutChan chan OutMessage
+
 const (
+	OutChanLen = 10
+
 	AuthMessageType = "auth"
 
 	RoomMessageType   = "room"
+	FieldMessageType  = "field"
 	TickerMessageType = "ticker"
 
 	OkMessageType    = "ok"
@@ -43,6 +52,11 @@ type TickerMessageData struct {
 }
 
 //easyjson:json
+type WallMessageData struct {
+	Cells [][]objects.ObjectType `json:"cells"`
+}
+
+//easyjson:json
 type OkMessageData struct {
 	Message string `json:"message"`
 }
@@ -51,9 +65,3 @@ type OkMessageData struct {
 type ErrorMessageData struct {
 	Message string `json:"message"`
 }
-
-type OutChan chan OutMessage
-
-const (
-	OutChanLen = 10
-)

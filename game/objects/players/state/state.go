@@ -1,19 +1,8 @@
 package playerstate
 
-type State int8
+type State string
 
 const (
-	Alive = 1
-	Dead  = 0
+	Alive = "alive"
+	Dead  = "dead"
 )
-
-func (st State) ToString() string {
-	switch st {
-	case Alive:
-		return "alive"
-	case Dead:
-		return "dead"
-	default:
-		return "unknown"
-	}
-}

@@ -2,28 +2,22 @@ package fields
 
 import (
 	"github.com/bombergame/multiplayer-service/game/objects"
-	"github.com/bombergame/multiplayer-service/game/objects/walls"
-	"math"
+	"github.com/bombergame/multiplayer-service/game/objects/players"
+	"github.com/bombergame/multiplayer-service/game/physics"
 	"math/rand"
 )
 
-type Size struct {
-	Width  int32
-	Height int32
-}
-
 type Field struct {
-	size  Size
+	size  physics.Size2D
 	cells [][]objects.GameObject
 }
 
-func NewField(size Size) *Field {
+func NewField(size physics.Size2D) *Field {
 	return &Field{
 		size: size,
 		cells: func() [][]objects.GameObject {
 			c := make([][]objects.GameObject, size.Height)
-			var i int32
-			for i = 0; i < size.Height; i++ {
+			for i := physics.Integer(0); i < size.Height; i++ {
 				c[i] = make([]objects.GameObject, size.Width)
 			}
 			return c
@@ -31,42 +25,42 @@ func NewField(size Size) *Field {
 	}
 }
 
+func (f *Field) SpawnPlayers(pAll map[int64]*players.Player) {
+	x, y := physics.Integer(0), physics.Integer(0)
+	for _, p := range pAll {
+		if x == f.size.Width {
+			y++
+		}
+		if y == f.size.Height {
+			break
+		}
+
+		f.cells[x][y] = p
+		x++
+	}
+}
+
 const (
-	SolidWallsPercent = 0.5
-	WeakWallsPercent  = 0.2
+	EmptyProb     = 0.5
+	WeakWallProb  = 0.6
+	SolidWallProb = 1.0
 )
 
-func (f *Field) GenerateRandom(nPlayers int32) {
-	var i, j int32
-	for i = 0; i < f.size.Height; i++ {
-		for j = 0; j < f.size.Width; j++ {
-			f.cells[i][j] = nil
+func (f *Field) SpawnObjects() {
+	for i := physics.Integer(0); i < f.size.Height; i++ {
+		for j := physics.Integer(0); j < f.size.Width; j++ {
+			if f.cells[i][j] != nil {
+				continue
+			}
+
+			prob := rand.NormFloat64()
+			if prob < EmptyProb {
+				f.cells[i][j] = nil
+			} else if prob < WeakWallProb {
+				//f.cells[i][j] = walls.NewWeakWall()
+			} else if prob < SolidWallProb {
+				//f.cells[i][j] = walls.NewSolidWall()
+			}
 		}
 	}
-
-	n := (f.size.Width * f.size.Height) - nPlayers
-
-	nSolidWalls := f.countNumObjects(n, SolidWallsPercent)
-	for i = 0; i < nSolidWalls; i++ {
-		r, c := f.randIndexes()
-		f.cells[r][c] = &walls.SolidWall{}
-	}
-
-	nWeakWalls := f.countNumObjects(n, WeakWallsPercent)
-	for i = 0; i < nWeakWalls; i++ {
-		r, c := f.randIndexes()
-		f.cells[r][c] = &walls.SolidWall{}
-	}
-}
-
-func (f *Field) randIndexes() (int, int) {
-	return f.randIndex(f.size.Height), f.randIndex(f.size.Width)
-}
-
-func (f *Field) randIndex(maxIndex int32) int {
-	return int(rand.Int31n(maxIndex))
-}
-
-func (f *Field) countNumObjects(n int32, p float64) int32 {
-	return int32(math.Floor(float64(n) * p))
 }

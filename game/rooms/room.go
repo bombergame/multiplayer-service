@@ -4,6 +4,7 @@ import (
 	"github.com/bombergame/multiplayer-service/domains"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/fields"
+	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/bombergame/multiplayer-service/game/rooms/commands"
 	"github.com/bombergame/multiplayer-service/game/rooms/state"
@@ -29,7 +30,8 @@ type Room struct {
 	tLimit time.Duration
 	ticker *time.Ticker
 
-	field *fields.Field
+	field   *fields.Field
+	objects map[objects.ID]objects.GameObject
 
 	maxNumPlayers  int64
 	allowAnonymous bool
@@ -131,7 +133,7 @@ func (r *Room) startGame() {
 	case gamestate.Pending:
 		r.state = gamestate.On
 
-		r.field.GenerateRandom(int32(r.maxNumPlayers))
+		r.field.SpawnObjects(int32(r.maxNumPlayers))
 		go r.gameLoop()
 
 	case gamestate.Paused:
