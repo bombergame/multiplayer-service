@@ -9,6 +9,7 @@ import (
 	"github.com/mailru/easyjson"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"sync"
 )
 
 func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
@@ -50,16 +51,22 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	srv.Logger().Info("Auth message received")
+
 	authID, err := srv.handleAuthRequest(conn, &msg)
 	if err != nil {
 		return
 	}
+
+	srv.Logger().Info("Auth message handled")
 
 	room, err := srv.components.RoomsManager.GetRoom(roomID)
 	if err != nil {
 		srv.closeConnectionWithError(conn, err)
 		return
 	}
+
+	srv.Logger().Info("Auth message received")
 
 	outChan := make(ws.OutChan, 10)
 
@@ -71,12 +78,30 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for {
-		select {
-		case c := <-outChan:
-			srv.writeWebSockJSON(conn, c)
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+
+	go func() {
+		for {
+			select {
+			case c := <-outChan:
+				srv.writeWebSockJSON(conn, c)
+			}
 		}
-	}
+	}()
+
+	go func() {
+		for {
+			_, _, err := conn.ReadMessage()
+			if err != nil {
+				srv.closeConnectionWithError(conn, err)
+				wg.Done()
+				return
+			}
+		}
+	}()
+
+	wg.Wait()
 }
 
 func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *ws.InMessage) (int64, error) {
