@@ -41,10 +41,22 @@ type MessageData struct {
 
 type CellObjectGetter func(physics.PositionVec2D) (GameObject, *errs.InvalidCellIndexError)
 
+type DynamicObject interface {
+}
+
 type MovingObject interface {
+	DynamicObject
 	SetCellObjectGetter(CellObjectGetter)
 }
 
-type WeakObject interface {
-	Destroy()
+type ExplosionHandler func(obj ExplosiveObject)
+
+type ExplosiveObject interface {
+	DynamicObject
+	ExplosionRadius() physics.Integer
+	SetExplosionHandler(ExplosionHandler)
+}
+
+type BreakableObject interface {
+	Break()
 }

@@ -6,6 +6,7 @@ import (
 	json "encoding/json"
 	objects "github.com/bombergame/multiplayer-service/game/objects"
 	state "github.com/bombergame/multiplayer-service/game/objects/bombs/state"
+	physics "github.com/bombergame/multiplayer-service/game/physics"
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -44,6 +45,10 @@ func easyjsonDe73ae40DecodeGithubComBombergameMultiplayerServiceGameObjectsBombs
 			if data := in.Raw(); in.Ok() {
 				in.AddError((out.Transform).UnmarshalJSON(data))
 			}
+		case "explosion_radius":
+			out.ExplosionRadius = physics.Integer(in.Int32())
+		case "explosion_timeout":
+			out.ExplosionTimeout = float64(in.Float64())
 		case "object_id":
 			out.ObjectID = objects.ObjectID(in.Int64())
 		case "object_type":
@@ -81,6 +86,26 @@ func easyjsonDe73ae40EncodeGithubComBombergameMultiplayerServiceGameObjectsBombs
 			out.RawString(prefix)
 		}
 		out.Raw((in.Transform).MarshalJSON())
+	}
+	{
+		const prefix string = ",\"explosion_radius\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int32(int32(in.ExplosionRadius))
+	}
+	{
+		const prefix string = ",\"explosion_timeout\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Float64(float64(in.ExplosionTimeout))
 	}
 	{
 		const prefix string = ",\"object_id\":"

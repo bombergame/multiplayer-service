@@ -25,7 +25,8 @@ type Bomb struct {
 	explosionRadius  physics.Integer
 	explosionTimeout time.Duration
 
-	changeHandler objects.ChangeHandler
+	changeHandler    objects.ChangeHandler
+	explosionHandler objects.ExplosionHandler
 }
 
 func NewBomb() *Bomb {
@@ -55,6 +56,14 @@ func (b *Bomb) Transform() components.Transform {
 	return b.transform
 }
 
+func (b *Bomb) ExplosionRadius() physics.Integer {
+	return b.explosionRadius
+}
+
+func (b *Bomb) SetExplosionHandler(h objects.ExplosionHandler) {
+	b.explosionHandler = h
+}
+
 func (b *Bomb) Spawn(pos physics.PositionVec2D) {
 	b.state = bombstate.Placed
 	b.transform.Position = pos
@@ -63,7 +72,12 @@ func (b *Bomb) Spawn(pos physics.PositionVec2D) {
 }
 
 func (b *Bomb) Update(d time.Duration) {
-	//TODO
+	b.explosionTimeout -= d
+	if b.explosionTimeout < 0 {
+		b.state = bombstate.Detonated
+		b.changeHandler(b)
+		b.explosionHandler(b)
+	}
 }
 
 func (b *Bomb) SetChangeHandler(h objects.ChangeHandler) {
@@ -73,8 +87,10 @@ func (b *Bomb) SetChangeHandler(h objects.ChangeHandler) {
 //easyjson:json
 type MessageData struct {
 	objects.MessageData
-	State     bombstate.State      `json:"state"`
-	Transform components.Transform `json:"transform"`
+	State            bombstate.State      `json:"state"`
+	Transform        components.Transform `json:"transform"`
+	ExplosionRadius  physics.Integer      `json:"explosion_radius"`
+	ExplosionTimeout float64              `json:"explosion_timeout"`
 }
 
 func (b *Bomb) Serialize() interface{} {
@@ -83,7 +99,9 @@ func (b *Bomb) Serialize() interface{} {
 			ObjectID:   b.objectID,
 			ObjectType: b.objectType,
 		},
-		State:     b.state,
-		Transform: b.transform,
+		State:            b.state,
+		Transform:        b.transform,
+		ExplosionRadius:  b.explosionRadius,
+		ExplosionTimeout: b.explosionTimeout.Seconds(),
 	}
 }
