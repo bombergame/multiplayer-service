@@ -66,31 +66,32 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 
 	for i := physics.Integer(0); i < f.size.Height; i++ {
 		for j := physics.Integer(0); j < f.size.Width; j++ {
-			objID++
-
-			if f.cells[i][j] != nil {
-				continue
-			}
-
-			prob := rand.NormFloat64()
-
-			if prob < EmptyProb {
-				f.cells[i][j] = nil
-				continue
-			}
-
 			var obj objects.GameObject
-			if prob < WeakWallProb {
-				obj = weakwalls.NewWall()
-				obj.SetObjectType(weakwalls.Type)
+
+			if f.cells[i][j] == nil {
+				prob := rand.NormFloat64()
+
+				if prob < EmptyProb {
+					f.cells[i][j] = nil
+					continue
+				}
+
+				if prob < WeakWallProb {
+					obj = weakwalls.NewWall()
+					obj.SetObjectType(weakwalls.Type)
+				} else {
+					obj = solidwalls.NewWall()
+					obj.SetObjectType(solidwalls.Type)
+				}
+
+				obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(i), physics.Coordinate(j)))
 			} else {
-				obj = solidwalls.NewWall()
-				obj.SetObjectType(solidwalls.Type)
+				obj = f.cells[i][j]
 			}
 
+			objID++
 			obj.SetObjectID(objID)
 			obj.SetChangeHandler(h)
-			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(i), physics.Coordinate(j)))
 
 			f.cells[i][j] = obj
 		}
