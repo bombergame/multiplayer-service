@@ -1,8 +1,11 @@
 package physics
 
+//go:generate easyjson
+
+//easyjson:json
 type Vec2D struct {
-	X Coordinate
-	Y Coordinate
+	X Coordinate `json:"x"`
+	Y Coordinate `json:"y"`
 }
 
 func GetVec2D(x, y Coordinate) Vec2D {
