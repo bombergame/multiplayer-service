@@ -2,10 +2,6 @@ package ws
 
 //go:generate easyjson
 
-import (
-	"github.com/bombergame/multiplayer-service/game/objects"
-)
-
 //easyjson:json
 type InMessage struct {
 	Type string                 `json:"type"`
@@ -37,23 +33,6 @@ const (
 type AuthMessageData struct {
 	AuthToken string `json:"auth_token"`
 	UserAgent string `json:"user_agent"`
-}
-
-//easyjson:json
-type RoomMessageData struct {
-	Title   string  `json:"title"`
-	State   string  `json:"state"`
-	Players []int64 `json:"players"`
-}
-
-//easyjson:json
-type TickerMessageData struct {
-	Value float64 `json:"value"`
-}
-
-//easyjson:json
-type WallMessageData struct {
-	Cells [][]objects.ObjectType `json:"cells"`
 }
 
 //easyjson:json

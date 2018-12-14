@@ -1,5 +1,7 @@
 package rooms
 
+//go:generate easyjson
+
 import (
 	"github.com/bombergame/multiplayer-service/domains"
 	"github.com/bombergame/multiplayer-service/game/errs"
@@ -210,6 +212,19 @@ func (r *Room) gameLoop() {
 	}
 }
 
+//easyjson:json
+type RoomMessageData struct {
+	Title     string         `json:"title"`
+	State     string         `json:"state"`
+	Players   []int64        `json:"players"`
+	FieldSize physics.Size2D `json:"field_size"`
+}
+
+//easyjson:json
+type TickerMessageData struct {
+	Value float64 `json:"value"`
+}
+
 func (r *Room) broadcastState() {
 	p := make([]int64, 0)
 	for id := range r.players {
@@ -218,10 +233,11 @@ func (r *Room) broadcastState() {
 
 	message := ws.OutMessage{
 		Type: ws.RoomMessageType,
-		Data: ws.RoomMessageData{
-			Title:   r.title,
-			State:   r.state.ToString(),
-			Players: p,
+		Data: RoomMessageData{
+			Title:     r.title,
+			State:     r.state.ToString(),
+			Players:   p,
+			FieldSize: r.field.Size(),
 		},
 	}
 
@@ -231,7 +247,7 @@ func (r *Room) broadcastState() {
 func (r *Room) broadcastTicker(t time.Duration) {
 	message := ws.OutMessage{
 		Type: ws.TickerMessageType,
-		Data: ws.TickerMessageData{
+		Data: TickerMessageData{
 			Value: r.tLimit.Seconds() - t.Seconds(),
 		},
 	}

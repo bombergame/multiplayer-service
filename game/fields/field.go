@@ -36,6 +36,10 @@ func NewField(size physics.Size2D) *Field {
 	return f
 }
 
+func (f *Field) Size() physics.Size2D {
+	return f.size
+}
+
 func (f *Field) PlacePlayers(pAll map[int64]*players.Player) {
 	x, y := physics.Integer(0), physics.Integer(0)
 	for _, p := range pAll {
