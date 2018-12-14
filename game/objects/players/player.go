@@ -162,16 +162,16 @@ const (
 func (p *Player) handleCmd(c playercommands.Cmd) {
 	switch c {
 	case playercommands.MoveUp:
-		p.move(p.transform.Position.Up(DefaultStepSize))
+		p.move(p.transform.Position.Up(p.movement.StepSize))
 
 	case playercommands.MoveDown:
-		p.move(p.transform.Position.Down(DefaultStepSize))
+		p.move(p.transform.Position.Down(p.movement.StepSize))
 
 	case playercommands.MoveLeft:
-		p.move(p.transform.Position.Left(DefaultStepSize))
+		p.move(p.transform.Position.Left(p.movement.StepSize))
 
 	case playercommands.MoveRight:
-		p.move(p.transform.Position.Right(DefaultStepSize))
+		p.move(p.transform.Position.Right(p.movement.StepSize))
 	}
 }
 

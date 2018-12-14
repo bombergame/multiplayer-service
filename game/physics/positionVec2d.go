@@ -15,18 +15,18 @@ func GetPositionVec2DZeros() PositionVec2D {
 	return GetPositionVec2D(0, 0)
 }
 
-func (p PositionVec2D) Up(d Coordinate) PositionVec2D {
-	return GetPositionVec2D(p.X, p.Y-d)
+func (p PositionVec2D) Up(d Integer) PositionVec2D {
+	return GetPositionVec2D(p.X, p.Y-Coordinate(d))
 }
 
-func (p PositionVec2D) Down(d Coordinate) PositionVec2D {
-	return GetPositionVec2D(p.X, p.Y+d)
+func (p PositionVec2D) Down(d Integer) PositionVec2D {
+	return GetPositionVec2D(p.X, p.Y+Coordinate(d))
 }
 
-func (p PositionVec2D) Left(d Coordinate) PositionVec2D {
-	return GetPositionVec2D(p.X-1, p.Y)
+func (p PositionVec2D) Left(d Integer) PositionVec2D {
+	return GetPositionVec2D(p.X-Coordinate(d), p.Y)
 }
 
-func (p PositionVec2D) Right(d Coordinate) PositionVec2D {
-	return GetPositionVec2D(p.X+1, p.Y)
+func (p PositionVec2D) Right(d Integer) PositionVec2D {
+	return GetPositionVec2D(p.X+Coordinate(d), p.Y)
 }
