@@ -86,6 +86,8 @@ func (p *Player) SetOutChan(outChan *ws.OutChan) {
 func (p *Player) Spawn(pos physics.PositionVec2D) {
 	p.state = playerstate.Alive
 	p.transform.Position = pos
+	p.movement.MinStepInterval = DefaultMinStepInterval
+	p.movement.LastStepInterval = 2 * p.movement.MinStepInterval
 }
 
 func (p *Player) Update(duration time.Duration) {
@@ -124,12 +126,16 @@ func (p *Player) SetCellObjectGetter(getter objects.CellObjectGetter) {
 	p.objGetter = getter
 }
 
-func (p *Player) moveTo(pos physics.PositionVec2D) {
-	obj, err := p.objGetter(pos)
+func (p *Player) move(newPos physics.PositionVec2D) {
+	if p.movement.LastStepInterval < p.movement.MinStepInterval {
+		return
+	}
+	obj, err := p.objGetter(newPos)
 	if err != nil || obj != nil {
 		return
 	}
-	p.transform.Position = pos
+	p.transform.Position = newPos
+	p.movement.LastStepInterval = 0
 }
 
 func (p *Player) handleCommands() {
@@ -144,21 +150,26 @@ func (p *Player) handleCommands() {
 }
 
 const (
-	MovementStep = 1
+	MovementStep           = 1
+	DefaultMinStepInterval = time.Second / 2
 )
 
 func (p *Player) handleCmd(c playercommands.Cmd) {
 	switch c {
 	case playercommands.MoveUp:
-		p.moveTo(p.transform.Position.Up(MovementStep))
+		p.move(p.transform.Position.Up(MovementStep))
 
 	case playercommands.MoveDown:
-		p.moveTo(p.transform.Position.Down(MovementStep))
+		p.move(p.transform.Position.Down(MovementStep))
 
 	case playercommands.MoveLeft:
-		p.moveTo(p.transform.Position.Left(MovementStep))
+		p.move(p.transform.Position.Left(MovementStep))
 
 	case playercommands.MoveRight:
-		p.moveTo(p.transform.Position.Right(MovementStep))
+		p.move(p.transform.Position.Right(MovementStep))
 	}
+}
+
+func (p *Player) passTime(duration time.Duration) {
+	p.movement.LastStepInterval += duration
 }
