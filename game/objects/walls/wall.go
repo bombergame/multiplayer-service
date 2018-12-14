@@ -3,7 +3,7 @@ package walls
 //go:generate easyjson
 
 import (
-	"github.com/bombergame/multiplayer-service/game/components/transform"
+	"github.com/bombergame/multiplayer-service/game/components"
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"time"
@@ -17,7 +17,7 @@ type Wall struct {
 	objectID   objects.ObjectID
 	objectType objects.ObjectType
 
-	transform     transform.Transform
+	transform     components.Transform
 	changeHandler objects.ChangeHandler
 }
 
@@ -41,7 +41,7 @@ func (w *Wall) SetObjectType(t objects.ObjectType) {
 	w.objectType = t
 }
 
-func (w *Wall) Transform() transform.Transform {
+func (w *Wall) Transform() components.Transform {
 	return w.transform
 }
 
@@ -61,7 +61,7 @@ func (w *Wall) SetChangeHandler(h objects.ChangeHandler) {
 //easyjson:json
 type MessageData struct {
 	objects.MessageData
-	Transform transform.Transform `json:"transform"`
+	Transform components.Transform `json:"transform"`
 }
 
 func (w *Wall) GetMessageData() MessageData {

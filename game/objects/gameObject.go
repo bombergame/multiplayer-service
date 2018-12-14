@@ -3,7 +3,7 @@ package objects
 //go:generate easyjson
 
 import (
-	"github.com/bombergame/multiplayer-service/game/components/transform"
+	"github.com/bombergame/multiplayer-service/game/components"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"time"
@@ -19,7 +19,7 @@ type GameObject interface {
 	ObjectID() ObjectID
 	SetObjectID(ObjectID)
 
-	Transform() transform.Transform
+	Transform() components.Transform
 
 	Spawn(physics.PositionVec2D)
 	Update(time.Duration)

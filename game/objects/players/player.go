@@ -3,7 +3,7 @@ package players
 //go:generate easyjson
 
 import (
-	"github.com/bombergame/multiplayer-service/game/components/transform"
+	"github.com/bombergame/multiplayer-service/game/components"
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/players/commands"
 	"github.com/bombergame/multiplayer-service/game/objects/players/state"
@@ -24,7 +24,8 @@ type Player struct {
 	objectType objects.ObjectType
 	state      playerstate.State
 
-	transform transform.Transform
+	movement  components.Movement
+	transform components.Transform
 
 	cmdChan *playercommands.CmdChan
 	outChan *ws.OutChan
@@ -70,7 +71,7 @@ func (p *Player) SetObjectType(t objects.ObjectType) {
 	p.objectType = t
 }
 
-func (p *Player) Transform() transform.Transform {
+func (p *Player) Transform() components.Transform {
 	return p.transform
 }
 
@@ -99,7 +100,7 @@ func (p *Player) SetChangeHandler(h objects.ChangeHandler) {
 type MessageData struct {
 	objects.MessageData
 	ID        int64               `json:"id"`
-	Transform transform.Transform `json:"transform"`
+	Transform components.Transform `json:"transform"`
 }
 
 func (p *Player) GetMessageData() MessageData {
