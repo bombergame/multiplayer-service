@@ -11,7 +11,6 @@ import (
 	"github.com/bombergame/multiplayer-service/game/rooms/state"
 	"github.com/bombergame/multiplayer-service/utils/ws"
 	"github.com/satori/go.uuid"
-	"log"
 	"sync"
 	"time"
 )
@@ -236,7 +235,6 @@ func (r *Room) broadcastTicker(t time.Duration) {
 }
 
 func (r *Room) broadcast(message ws.OutMessage) {
-	log.Println("Broadcast message: ", message)
 	for _, p := range r.players {
 		*p.OutChan() <- message
 	}

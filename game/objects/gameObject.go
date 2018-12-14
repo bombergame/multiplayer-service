@@ -7,6 +7,7 @@ import (
 )
 
 type ChangeHandler func(obj GameObject)
+type CollisionHandler func(obj GameObject)
 
 type GameObject interface {
 	Type() ObjectType
@@ -22,4 +23,8 @@ type GameObject interface {
 	SetChangeHandler(ChangeHandler)
 
 	Serialize() interface{}
+}
+
+type MovingObject interface {
+	CheckFree(physics.PositionVec2D) bool
 }
