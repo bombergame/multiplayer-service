@@ -37,7 +37,7 @@ func (srv *Service) readRoomID(r *http.Request) (uuid.UUID, error) {
 
 func (srv *Service) writeWebSockOk(conn *websocket.Conn) {
 	srv.writeWebSockJSON(conn, &ws.OutMessage{
-		Type: "ok",
+		Type: ws.OkMessageType,
 		Data: ws.OkMessageData{
 			Message: "ok",
 		},
@@ -46,7 +46,7 @@ func (srv *Service) writeWebSockOk(conn *websocket.Conn) {
 
 func (srv *Service) writeWebSockError(conn *websocket.Conn, err error) {
 	srv.writeWebSockJSON(conn, &ws.OutMessage{
-		Type: "error",
+		Type: ws.ErrorMessageType,
 		Data: ws.ErrorMessageData{
 			Message: err.Error(),
 		},
@@ -54,8 +54,6 @@ func (srv *Service) writeWebSockError(conn *websocket.Conn, err error) {
 }
 
 func (srv *Service) writeWebSockJSON(conn *websocket.Conn, v easyjson.Marshaler) {
-	srv.Logger().Info("JSON message:", v)
-
 	resp, err := easyjson.Marshal(v)
 	if err != nil {
 		panic(err)
