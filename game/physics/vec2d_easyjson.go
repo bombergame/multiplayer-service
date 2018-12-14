@@ -17,7 +17,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonD57d4c9DecodeGithubComBombergameMultiplayerServiceGamePhysics(in *jlexer.Lexer, out *PositionVec2D) {
+func easyjsonF66850ceDecodeGithubComBombergameMultiplayerServiceGamePhysics(in *jlexer.Lexer, out *Vec2D) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -50,7 +50,7 @@ func easyjsonD57d4c9DecodeGithubComBombergameMultiplayerServiceGamePhysics(in *j
 		in.Consumed()
 	}
 }
-func easyjsonD57d4c9EncodeGithubComBombergameMultiplayerServiceGamePhysics(out *jwriter.Writer, in PositionVec2D) {
+func easyjsonF66850ceEncodeGithubComBombergameMultiplayerServiceGamePhysics(out *jwriter.Writer, in Vec2D) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -78,25 +78,25 @@ func easyjsonD57d4c9EncodeGithubComBombergameMultiplayerServiceGamePhysics(out *
 }
 
 // MarshalJSON supports json.Marshaler interface
-func (v PositionVec2D) MarshalJSON() ([]byte, error) {
+func (v Vec2D) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonD57d4c9EncodeGithubComBombergameMultiplayerServiceGamePhysics(&w, v)
+	easyjsonF66850ceEncodeGithubComBombergameMultiplayerServiceGamePhysics(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v PositionVec2D) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD57d4c9EncodeGithubComBombergameMultiplayerServiceGamePhysics(w, v)
+func (v Vec2D) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonF66850ceEncodeGithubComBombergameMultiplayerServiceGamePhysics(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
-func (v *PositionVec2D) UnmarshalJSON(data []byte) error {
+func (v *Vec2D) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonD57d4c9DecodeGithubComBombergameMultiplayerServiceGamePhysics(&r, v)
+	easyjsonF66850ceDecodeGithubComBombergameMultiplayerServiceGamePhysics(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *PositionVec2D) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD57d4c9DecodeGithubComBombergameMultiplayerServiceGamePhysics(l, v)
+func (v *Vec2D) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonF66850ceDecodeGithubComBombergameMultiplayerServiceGamePhysics(l, v)
 }
