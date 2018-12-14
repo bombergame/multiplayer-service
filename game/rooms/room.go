@@ -133,7 +133,7 @@ func (r *Room) startGame() {
 
 	switch r.state {
 	case gamestate.Pending:
-		r.field.SpawnPlayers(r.players)
+		r.field.PlacePlayers(r.players)
 		r.field.SpawnObjects(func(obj objects.GameObject) {
 			v := obj.Serialize()
 			log.Println(v)

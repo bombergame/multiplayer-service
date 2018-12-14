@@ -7,7 +7,6 @@ import (
 	"github.com/bombergame/multiplayer-service/game/objects/walls/solid"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/weak"
 	"github.com/bombergame/multiplayer-service/game/physics"
-	"log"
 	"math/rand"
 )
 
@@ -33,7 +32,7 @@ func NewField(size physics.Size2D) *Field {
 	}
 }
 
-func (f *Field) SpawnPlayers(pAll map[int64]*players.Player) {
+func (f *Field) PlacePlayers(pAll map[int64]*players.Player) {
 	x, y := physics.Integer(0), physics.Integer(0)
 	for _, p := range pAll {
 		if x == f.size.Width {
@@ -43,6 +42,7 @@ func (f *Field) SpawnPlayers(pAll map[int64]*players.Player) {
 			break
 		}
 
+		p.SetObjectType(players.Type)
 		p.SetCellObjectGetter(func(pos physics.PositionVec2D) (objects.GameObject, *errs.InvalidCellIndexError) {
 			x, y := physics.Integer(pos.X), physics.Integer(pos.Y)
 			if x < 0 || x >= f.size.Width || y < 0 || y >= f.size.Height {
@@ -63,12 +63,6 @@ const (
 )
 
 func (f *Field) SpawnObjects(h objects.ChangeHandler) {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Println(r)
-		}
-	}()
-
 	objID := objects.ObjectID(0)
 
 	for i := physics.Integer(0); i < f.size.Height; i++ {
@@ -90,8 +84,6 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 					obj = solidwalls.NewWall()
 					obj.SetObjectType(solidwalls.Type)
 				}
-
-				obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(i), physics.Coordinate(j)))
 			} else {
 				obj = f.cells[i][j]
 			}
@@ -99,6 +91,7 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 			objID++
 			obj.SetObjectID(objID)
 			obj.SetChangeHandler(h)
+			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(i), physics.Coordinate(j)))
 
 			f.cells[i][j] = obj
 		}

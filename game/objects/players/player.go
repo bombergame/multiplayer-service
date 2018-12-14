@@ -91,6 +91,8 @@ func (p *Player) Spawn(pos physics.PositionVec2D) {
 	p.movement.StepSize = DefaultStepSize
 	p.movement.MinStepInterval = DefaultMinStepInterval
 	p.movement.LastStepInterval = 2 * p.movement.MinStepInterval
+
+	p.changeHandler(p)
 }
 
 func (p *Player) Update(duration time.Duration) {
