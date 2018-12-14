@@ -7,6 +7,7 @@ import (
 	"github.com/bombergame/multiplayer-service/game/objects/walls/solid"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/weak"
 	"github.com/bombergame/multiplayer-service/game/physics"
+	"log"
 	"math/rand"
 )
 
@@ -62,6 +63,12 @@ const (
 )
 
 func (f *Field) SpawnObjects(h objects.ChangeHandler) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println(r)
+		}
+	}()
+
 	objID := objects.ObjectID(0)
 
 	for i := physics.Integer(0); i < f.size.Height; i++ {
