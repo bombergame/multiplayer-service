@@ -140,6 +140,7 @@ func (p *Player) move(newPos physics.PositionVec2D) {
 	}
 	p.transform.Position = newPos
 	p.movement.LastStepInterval = 0
+	p.changeHandler(p)
 }
 
 func (p *Player) handleCommands() {
