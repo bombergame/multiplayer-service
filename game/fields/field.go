@@ -12,15 +12,16 @@ import (
 )
 
 type Field struct {
-	size  physics.Size2D
-	cells [][]objects.GameObject
+	size physics.Size2D
 
+	cells                 [][]objects.GameObject
 	invalidCellIndexError *errs.InvalidCellIndexError
 }
 
 func NewField(size physics.Size2D) *Field {
-	return &Field{
+	f := &Field{
 		size: size,
+
 		cells: func() [][]objects.GameObject {
 			c := make([][]objects.GameObject, size.Height)
 			for i := physics.Integer(0); i < size.Height; i++ {
@@ -31,6 +32,8 @@ func NewField(size physics.Size2D) *Field {
 
 		invalidCellIndexError: errs.NewInvalidCellIndexError(),
 	}
+
+	return f
 }
 
 func (f *Field) PlacePlayers(pAll map[int64]*players.Player) {
