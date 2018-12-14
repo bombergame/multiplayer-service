@@ -86,7 +86,7 @@ func (srv *Service) handleGameplay(w http.ResponseWriter, r *http.Request) {
 		for {
 			_, data, err := conn.ReadMessage()
 			if err != nil {
-				srv.closeConnectionWithError(conn, err)
+				srv.closeConnection(conn)
 				room.DeletePlayer(p)
 				wg.Done()
 				return
@@ -134,6 +134,10 @@ func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *ws.InMessage) (
 
 func (srv *Service) closeConnectionWithError(conn *websocket.Conn, err error) {
 	srv.writeWebSockError(conn, err)
+	srv.closeConnection(conn)
+}
+
+func (srv *Service) closeConnection(conn *websocket.Conn) {
 	if err := conn.Close(); err != nil {
 		srv.Logger().Error(err)
 	}
