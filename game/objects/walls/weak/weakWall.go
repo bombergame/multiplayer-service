@@ -3,7 +3,6 @@ package weakwalls
 //go:generate easyjson
 
 import (
-	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/walls"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/weak/state"
 )
@@ -15,8 +14,6 @@ const (
 type Wall struct {
 	walls.Wall
 	state weakwallstate.State
-
-	changeHandler objects.ChangeHandler
 }
 
 func NewWall() *Wall {
@@ -24,6 +21,11 @@ func NewWall() *Wall {
 		Wall:  *walls.NewWall(),
 		state: weakwallstate.Up,
 	}
+}
+
+func (w *Wall) Break() {
+	w.state = weakwallstate.Down
+	//TODO
 }
 
 //easyjson:json
