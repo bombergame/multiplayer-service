@@ -21,7 +21,8 @@ import (
 const (
 	DefaultAnonymousPlayerID = -1
 
-	TickerPeriod = 50 * time.Millisecond
+	TickerPeriod          = 50 * time.Millisecond
+	BroadcastTickerPeriod = time.Second
 )
 
 type Room struct {
@@ -190,7 +191,9 @@ func (r *Room) findFreeAnonID() int64 {
 
 func (r *Room) gameLoop() {
 	tStart := <-r.ticker.C
+
 	tPrev := tStart
+	tPrevBcst := tStart
 
 	for tCur := range r.ticker.C {
 		r.mu.Lock()
@@ -205,7 +208,10 @@ func (r *Room) gameLoop() {
 			tPrev = tCur
 			r.field.UpdateObjects(d)
 
-			r.broadcastTicker(t)
+			if tCur.Sub(tPrevBcst) > BroadcastTickerPeriod {
+				r.broadcastTicker(t)
+				tPrevBcst = tCur
+			}
 		}
 
 		r.mu.Unlock()
