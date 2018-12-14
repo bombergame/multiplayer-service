@@ -99,8 +99,9 @@ func (p *Player) SetChangeHandler(h objects.ChangeHandler) {
 //easyjson:json
 type MessageData struct {
 	objects.MessageData
-	ID        int64               `json:"id"`
-	Transform components.Transform `json:"transform"`
+	ID        int64                          `json:"id"`
+	Transform components.Transform           `json:"transform"`
+	Movement  components.MovementMessageData `json:"movement"`
 }
 
 func (p *Player) GetMessageData() MessageData {
@@ -111,6 +112,7 @@ func (p *Player) GetMessageData() MessageData {
 		},
 		ID:        p.id,
 		Transform: p.transform,
+		Movement:  p.movement.GetMessageData(),
 	}
 }
 
