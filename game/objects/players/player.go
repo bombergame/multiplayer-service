@@ -28,6 +28,7 @@ type Player struct {
 	cmdChan *playercommands.CmdChan
 	outChan *ws.OutChan
 
+	objGetter     objects.CellObjectGetter
 	changeHandler objects.ChangeHandler
 
 	mu *sync.Mutex
@@ -108,8 +109,15 @@ func (p *Player) Serialize() (objects.ObjectType, interface{}) {
 	return Type, p.GetMessageData()
 }
 
+func (p *Player) SetCellObjectGetter(getter objects.CellObjectGetter) {
+	p.objGetter = getter
+}
+
 func (p *Player) moveTo(pos physics.PositionVec2D) {
-	//TODO
+	obj, err := p.objGetter(pos)
+	if err != nil || obj != nil {
+		return
+	}
 	p.transform.Position = pos
 }
 

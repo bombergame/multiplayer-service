@@ -1,6 +1,7 @@
 package fields
 
 import (
+	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/solid"
@@ -12,6 +13,8 @@ import (
 type Field struct {
 	size  physics.Size2D
 	cells [][]objects.GameObject
+
+	invalidCellIndexError *errs.InvalidCellIndexError
 }
 
 func NewField(size physics.Size2D) *Field {
@@ -24,6 +27,8 @@ func NewField(size physics.Size2D) *Field {
 			}
 			return c
 		}(),
+
+		invalidCellIndexError: errs.NewInvalidCellIndexError(),
 	}
 }
 

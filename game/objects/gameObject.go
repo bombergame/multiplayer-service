@@ -2,6 +2,7 @@ package objects
 
 import (
 	"github.com/bombergame/multiplayer-service/game/components/transform"
+	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"time"
 )
@@ -25,6 +26,12 @@ type GameObject interface {
 	Serialize() (ObjectType, interface{})
 }
 
+type CellObjectGetter func(d physics.PositionVec2D) (GameObject, *errs.InvalidCellIndexError)
+
 type MovingObject interface {
-	CheckFree(physics.PositionVec2D) bool
+	SetCellObjectGetter(CellObjectGetter)
+}
+
+type WeakObject interface {
+	Destroy()
 }
