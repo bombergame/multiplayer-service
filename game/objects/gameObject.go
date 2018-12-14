@@ -39,7 +39,7 @@ type MessageData struct {
 	ObjectType ObjectType `json:"object_type"`
 }
 
-type CellObjectGetter func(d physics.PositionVec2D) (GameObject, *errs.InvalidCellIndexError)
+type CellObjectGetter func(physics.PositionVec2D) (GameObject, *errs.InvalidCellIndexError)
 
 type MovingObject interface {
 	SetCellObjectGetter(CellObjectGetter)

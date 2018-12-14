@@ -4,6 +4,7 @@ package components
 
 import (
 	json "encoding/json"
+	physics "github.com/bombergame/multiplayer-service/game/physics"
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -36,10 +37,10 @@ func easyjson7b1c777DecodeGithubComBombergameMultiplayerServiceGameComponents(in
 			continue
 		}
 		switch key {
+		case "step_size":
+			out.StepSize = physics.Integer(in.Int32())
 		case "min_step_interval":
 			out.MinStepInterval = float64(in.Float64())
-		case "last_step_interval":
-			out.LastStepInterval = float64(in.Float64())
 		default:
 			in.SkipRecursive()
 		}
@@ -55,6 +56,16 @@ func easyjson7b1c777EncodeGithubComBombergameMultiplayerServiceGameComponents(ou
 	first := true
 	_ = first
 	{
+		const prefix string = ",\"step_size\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Int32(int32(in.StepSize))
+	}
+	{
 		const prefix string = ",\"min_step_interval\":"
 		if first {
 			first = false
@@ -63,16 +74,6 @@ func easyjson7b1c777EncodeGithubComBombergameMultiplayerServiceGameComponents(ou
 			out.RawString(prefix)
 		}
 		out.Float64(float64(in.MinStepInterval))
-	}
-	{
-		const prefix string = ",\"last_step_interval\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
-		out.Float64(float64(in.LastStepInterval))
 	}
 	out.RawByte('}')
 }

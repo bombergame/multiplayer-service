@@ -85,12 +85,16 @@ func (p *Player) SetOutChan(outChan *ws.OutChan) {
 
 func (p *Player) Spawn(pos physics.PositionVec2D) {
 	p.state = playerstate.Alive
+
 	p.transform.Position = pos
+
+	p.movement.StepSize = DefaultStepSize
 	p.movement.MinStepInterval = DefaultMinStepInterval
 	p.movement.LastStepInterval = 2 * p.movement.MinStepInterval
 }
 
 func (p *Player) Update(duration time.Duration) {
+	p.passTime(duration)
 	p.handleCommands()
 }
 
@@ -150,23 +154,23 @@ func (p *Player) handleCommands() {
 }
 
 const (
-	MovementStep           = 1
+	DefaultStepSize        = 1
 	DefaultMinStepInterval = time.Second / 2
 )
 
 func (p *Player) handleCmd(c playercommands.Cmd) {
 	switch c {
 	case playercommands.MoveUp:
-		p.move(p.transform.Position.Up(MovementStep))
+		p.move(p.transform.Position.Up(DefaultStepSize))
 
 	case playercommands.MoveDown:
-		p.move(p.transform.Position.Down(MovementStep))
+		p.move(p.transform.Position.Down(DefaultStepSize))
 
 	case playercommands.MoveLeft:
-		p.move(p.transform.Position.Left(MovementStep))
+		p.move(p.transform.Position.Left(DefaultStepSize))
 
 	case playercommands.MoveRight:
-		p.move(p.transform.Position.Right(MovementStep))
+		p.move(p.transform.Position.Right(DefaultStepSize))
 	}
 }
 

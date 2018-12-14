@@ -42,7 +42,15 @@ func (f *Field) SpawnPlayers(pAll map[int64]*players.Player) {
 			break
 		}
 
-		f.cells[x][y] = p
+		p.SetCellObjectGetter(func(pos physics.PositionVec2D) (objects.GameObject, *errs.InvalidCellIndexError) {
+			x, y := physics.Integer(pos.X), physics.Integer(pos.Y)
+			if x < 0 || x >= f.size.Width || y < 0 || y >= f.size.Height {
+				return nil, f.invalidCellIndexError
+			}
+			return f.cells[y][x], nil
+		})
+
+		f.cells[y][x] = p
 		x++
 	}
 }

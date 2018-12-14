@@ -43,6 +43,10 @@ func easyjsonAcd0c35fDecodeGithubComBombergameMultiplayerServiceGameObjectsPlaye
 			if data := in.Raw(); in.Ok() {
 				in.AddError((out.Transform).UnmarshalJSON(data))
 			}
+		case "movement":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Movement).UnmarshalJSON(data))
+			}
 		case "object_id":
 			out.ObjectID = objects.ObjectID(in.Int64())
 		case "object_type":
@@ -80,6 +84,16 @@ func easyjsonAcd0c35fEncodeGithubComBombergameMultiplayerServiceGameObjectsPlaye
 			out.RawString(prefix)
 		}
 		out.Raw((in.Transform).MarshalJSON())
+	}
+	{
+		const prefix string = ",\"movement\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Raw((in.Movement).MarshalJSON())
 	}
 	{
 		const prefix string = ",\"object_id\":"
