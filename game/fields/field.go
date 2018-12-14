@@ -8,6 +8,7 @@ import (
 	"github.com/bombergame/multiplayer-service/game/objects/walls/weak"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"math/rand"
+	"time"
 )
 
 type Field struct {
@@ -94,6 +95,17 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(i), physics.Coordinate(j)))
 
 			f.cells[i][j] = obj
+		}
+	}
+}
+
+func (f *Field) UpdateObjects(d time.Duration) {
+	for i := physics.Integer(0); i < f.size.Height; i++ {
+		for j := physics.Integer(0); j < f.size.Width; j++ {
+			if f.cells[i][j] == nil {
+				continue
+			}
+			f.cells[i][j].Update(d)
 		}
 	}
 }

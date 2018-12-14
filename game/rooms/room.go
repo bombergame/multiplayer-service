@@ -188,7 +188,7 @@ func (r *Room) findFreeAnonID() int64 {
 
 func (r *Room) gameLoop() {
 	tStart := <-r.ticker.C
-	//tPrev := tStart //TODO
+	tPrev := tStart
 
 	for tCur := range r.ticker.C {
 		r.mu.Lock()
@@ -198,6 +198,10 @@ func (r *Room) gameLoop() {
 			if t > r.tLimit {
 				break
 			}
+
+			d := tCur.Sub(tPrev)
+			tPrev = tCur
+			r.field.UpdateObjects(d)
 
 			r.broadcastTicker(t)
 		}
