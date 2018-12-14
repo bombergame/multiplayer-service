@@ -6,7 +6,6 @@ import (
 	"github.com/bombergame/multiplayer-service/game/objects/walls/solid"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/weak"
 	"github.com/bombergame/multiplayer-service/game/physics"
-	"log"
 	"math/rand"
 )
 
@@ -77,7 +76,6 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 			obj.SetObjectID(objID)
 			obj.SetChangeHandler(h)
 			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(i), physics.Coordinate(j)))
-			log.Println("Object type: ", obj.Type())
 
 			f.cells[i][j] = obj
 		}

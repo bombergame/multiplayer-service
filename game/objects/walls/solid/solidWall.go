@@ -36,6 +36,6 @@ func (w *Wall) GetMessageData() MessageData {
 	}
 }
 
-func (w *Wall) Serialize() interface{} {
-	return w.GetMessageData()
+func (w *Wall) Serialize() (objects.ObjectType, interface{}) {
+	return Type, w.GetMessageData()
 }

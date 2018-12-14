@@ -135,9 +135,10 @@ func (r *Room) startGame() {
 		r.state = gamestate.On
 
 		h := func(obj objects.GameObject) {
+			t, v := obj.Serialize()
 			r.broadcast(ws.OutMessage{
-				Type: string(obj.Type()),
-				Data: obj.Serialize(),
+				Type: t.String(),
+				Data: v,
 			})
 		}
 

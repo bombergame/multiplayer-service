@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-type ChangeHandler func(obj GameObject)
-type CollisionHandler func(obj GameObject)
+type ChangeHandler func(GameObject)
+type CollisionHandler func(GameObject)
 
 type GameObject interface {
 	Type() ObjectType
@@ -22,7 +22,7 @@ type GameObject interface {
 
 	SetChangeHandler(ChangeHandler)
 
-	Serialize() interface{}
+	Serialize() (ObjectType, interface{})
 }
 
 type MovingObject interface {

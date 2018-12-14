@@ -96,12 +96,16 @@ type MessageData struct {
 	Transform transform.Transform `json:"transform"`
 }
 
-func (p *Player) Serialize() interface{} {
+func (p *Player) GetMessageData() MessageData {
 	return MessageData{
 		ObjectID:  p.objectID,
 		State:     p.state,
 		Transform: p.transform,
 	}
+}
+
+func (p *Player) Serialize() (objects.ObjectType, interface{}) {
+	return Type, p.GetMessageData()
 }
 
 func (p *Player) moveTo(pos physics.PositionVec2D) {
