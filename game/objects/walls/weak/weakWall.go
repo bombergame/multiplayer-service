@@ -15,6 +15,8 @@ const (
 type Wall struct {
 	walls.Wall
 	state weakwallstate.State
+
+	changeHandler objects.ChangeHandler
 }
 
 func NewWall() *Wall {
@@ -22,10 +24,6 @@ func NewWall() *Wall {
 		Wall:  *walls.NewWall(),
 		state: weakwallstate.Up,
 	}
-}
-
-func (w *Wall) Type() objects.ObjectType {
-	return Type
 }
 
 //easyjson:json
@@ -41,6 +39,6 @@ func (w *Wall) GetMessageData() MessageData {
 	}
 }
 
-func (w *Wall) Serialize() (objects.ObjectType, interface{}) {
-	return Type, w.GetMessageData()
+func (w *Wall) Serialize() interface{} {
+	return w.GetMessageData()
 }

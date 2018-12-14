@@ -1,5 +1,7 @@
 package objects
 
+//go:generate easyjson
+
 import (
 	"github.com/bombergame/multiplayer-service/game/components/transform"
 	"github.com/bombergame/multiplayer-service/game/errs"
@@ -11,10 +13,11 @@ type ChangeHandler func(GameObject)
 type CollisionHandler func(GameObject)
 
 type GameObject interface {
-	Type() ObjectType
+	ObjectType() ObjectType
+	SetObjectType(ObjectType)
 
-	ObjectID() ID
-	SetObjectID(ID)
+	ObjectID() ObjectID
+	SetObjectID(ObjectID)
 
 	Transform() transform.Transform
 
@@ -23,7 +26,17 @@ type GameObject interface {
 
 	SetChangeHandler(ChangeHandler)
 
-	Serialize() (ObjectType, interface{})
+	Serialize() interface{}
+}
+
+const (
+	MessageType = "object"
+)
+
+//easyjson:json
+type MessageData struct {
+	ObjectID   ObjectID   `json:"object_id"`
+	ObjectType ObjectType `json:"object_type"`
 }
 
 type CellObjectGetter func(d physics.PositionVec2D) (GameObject, *errs.InvalidCellIndexError)

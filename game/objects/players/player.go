@@ -20,8 +20,9 @@ const (
 type Player struct {
 	id int64
 
-	objectID objects.ID
-	state    playerstate.State
+	objectID   objects.ObjectID
+	objectType objects.ObjectType
+	state      playerstate.State
 
 	transform transform.Transform
 
@@ -45,8 +46,12 @@ func (p *Player) ID() int64 {
 	return p.id
 }
 
-func (p *Player) ObjectID() objects.ID {
+func (p *Player) ObjectID() objects.ObjectID {
 	return p.objectID
+}
+
+func (p *Player) ObjectType() objects.ObjectType {
+	return p.objectType
 }
 
 func (p *Player) OutChan() *ws.OutChan {
@@ -57,12 +62,12 @@ func (p *Player) SetID(id int64) {
 	p.id = id
 }
 
-func (p *Player) SetObjectID(id objects.ID) {
+func (p *Player) SetObjectID(id objects.ObjectID) {
 	p.objectID = id
 }
 
-func (p *Player) Type() objects.ObjectType {
-	return Type
+func (p *Player) SetObjectType(t objects.ObjectType) {
+	p.objectType = t
 }
 
 func (p *Player) Transform() transform.Transform {
@@ -92,21 +97,22 @@ func (p *Player) SetChangeHandler(h objects.ChangeHandler) {
 
 //easyjson:json
 type MessageData struct {
-	ObjectID  objects.ID          `json:"object_id"`
-	State     playerstate.State   `json:"state"`
+	objects.MessageData
 	Transform transform.Transform `json:"transform"`
 }
 
 func (p *Player) GetMessageData() MessageData {
 	return MessageData{
-		ObjectID:  p.objectID,
-		State:     p.state,
+		MessageData: objects.MessageData{
+			ObjectID:   p.objectID,
+			ObjectType: p.objectType,
+		},
 		Transform: p.transform,
 	}
 }
 
-func (p *Player) Serialize() (objects.ObjectType, interface{}) {
-	return Type, p.GetMessageData()
+func (p *Player) Serialize() interface{} {
+	return p.GetMessageData()
 }
 
 func (p *Player) SetCellObjectGetter(getter objects.CellObjectGetter) {

@@ -54,7 +54,7 @@ const (
 )
 
 func (f *Field) SpawnObjects(h objects.ChangeHandler) {
-	objID := objects.ID(0)
+	objID := objects.ObjectID(0)
 
 	for i := physics.Integer(0); i < f.size.Height; i++ {
 		for j := physics.Integer(0); j < f.size.Width; j++ {
@@ -74,8 +74,10 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 			var obj objects.GameObject
 			if prob < WeakWallProb {
 				obj = weakwalls.NewWall()
+				obj.SetObjectType(weakwalls.Type)
 			} else {
 				obj = solidwalls.NewWall()
+				obj.SetObjectType(solidwalls.Type)
 			}
 
 			obj.SetObjectID(objID)

@@ -37,12 +37,14 @@ func easyjsonC77e5303DecodeGithubComBombergameMultiplayerServiceGameObjectsWalls
 			continue
 		}
 		switch key {
-		case "object_id":
-			out.ObjectID = objects.ID(in.Int64())
 		case "transform":
 			if data := in.Raw(); in.Ok() {
 				in.AddError((out.Transform).UnmarshalJSON(data))
 			}
+		case "object_id":
+			out.ObjectID = objects.ObjectID(in.Int64())
+		case "object_type":
+			out.ObjectType = objects.ObjectType(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -58,6 +60,16 @@ func easyjsonC77e5303EncodeGithubComBombergameMultiplayerServiceGameObjectsWalls
 	first := true
 	_ = first
 	{
+		const prefix string = ",\"transform\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Raw((in.Transform).MarshalJSON())
+	}
+	{
 		const prefix string = ",\"object_id\":"
 		if first {
 			first = false
@@ -68,14 +80,14 @@ func easyjsonC77e5303EncodeGithubComBombergameMultiplayerServiceGameObjectsWalls
 		out.Int64(int64(in.ObjectID))
 	}
 	{
-		const prefix string = ",\"transform\":"
+		const prefix string = ",\"object_type\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])
 		} else {
 			out.RawString(prefix)
 		}
-		out.Raw((in.Transform).MarshalJSON())
+		out.String(string(in.ObjectType))
 	}
 	out.RawByte('}')
 }

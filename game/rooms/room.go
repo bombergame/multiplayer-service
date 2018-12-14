@@ -32,7 +32,7 @@ type Room struct {
 	ticker *time.Ticker
 
 	field   *fields.Field
-	objects map[objects.ID]objects.GameObject
+	objects map[objects.ObjectID]objects.GameObject
 
 	maxNumPlayers  int64
 	allowAnonymous bool
@@ -136,11 +136,10 @@ func (r *Room) startGame() {
 		r.state = gamestate.On
 
 		h := func(obj objects.GameObject) {
-			t, v := obj.Serialize()
-			log.Println("Serialized: ", t, v)
+			log.Println("Serialized: ", obj.ObjectType().String(), obj.Serialize())
 			r.broadcast(ws.OutMessage{
-				Type: t.String(),
-				Data: v,
+				Type: obj.ObjectType().String(),
+				Data: obj.Serialize(),
 			})
 		}
 

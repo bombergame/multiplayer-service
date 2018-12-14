@@ -3,7 +3,6 @@ package solidwalls
 //go:generate easyjson
 
 import (
-	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/walls"
 )
 
@@ -21,10 +20,6 @@ func NewWall() *Wall {
 	}
 }
 
-func (w *Wall) Type() objects.ObjectType {
-	return Type
-}
-
 //easyjson:json
 type MessageData struct {
 	walls.MessageData
@@ -36,6 +31,6 @@ func (w *Wall) GetMessageData() MessageData {
 	}
 }
 
-func (w *Wall) Serialize() (objects.ObjectType, interface{}) {
-	return Type, w.GetMessageData()
+func (w *Wall) Serialize() interface{} {
+	return w.GetMessageData()
 }

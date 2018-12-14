@@ -14,7 +14,9 @@ const (
 )
 
 type Wall struct {
-	objectID      objects.ID
+	objectID   objects.ObjectID
+	objectType objects.ObjectType
+
 	transform     transform.Transform
 	changeHandler objects.ChangeHandler
 }
@@ -23,16 +25,20 @@ func NewWall() *Wall {
 	return &Wall{}
 }
 
-func (w *Wall) Type() objects.ObjectType {
-	return Type
-}
-
-func (w *Wall) ObjectID() objects.ID {
+func (w *Wall) ObjectID() objects.ObjectID {
 	return w.objectID
 }
 
-func (w *Wall) SetObjectID(id objects.ID) {
+func (w *Wall) ObjectType() objects.ObjectType {
+	return w.objectType
+}
+
+func (w *Wall) SetObjectID(id objects.ObjectID) {
 	w.objectID = id
+}
+
+func (w *Wall) SetObjectType(t objects.ObjectType) {
+	w.objectType = t
 }
 
 func (w *Wall) Transform() transform.Transform {
@@ -54,17 +60,20 @@ func (w *Wall) SetChangeHandler(h objects.ChangeHandler) {
 
 //easyjson:json
 type MessageData struct {
-	ObjectID  objects.ID          `json:"object_id"`
+	objects.MessageData
 	Transform transform.Transform `json:"transform"`
 }
 
 func (w *Wall) GetMessageData() MessageData {
 	return MessageData{
-		ObjectID:  w.objectID,
+		MessageData: objects.MessageData{
+			ObjectID:   w.objectID,
+			ObjectType: w.objectType,
+		},
 		Transform: w.transform,
 	}
 }
 
-func (w *Wall) Serialize() (objects.ObjectType, interface{}) {
-	return Type, w.GetMessageData()
+func (w *Wall) Serialize() interface{} {
+	return w.GetMessageData()
 }
