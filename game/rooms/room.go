@@ -11,6 +11,7 @@ import (
 	"github.com/bombergame/multiplayer-service/game/rooms/state"
 	"github.com/bombergame/multiplayer-service/utils/ws"
 	"github.com/satori/go.uuid"
+	"log"
 	"sync"
 	"time"
 )
@@ -135,9 +136,11 @@ func (r *Room) startGame() {
 		r.state = gamestate.On
 
 		h := func(obj objects.GameObject) {
+			v := obj.Serialize()
+			log.Println(v)
 			r.broadcast(ws.OutMessage{
 				Type: objects.MessageType,
-				Data: obj.Serialize(),
+				Data: v,
 			})
 		}
 
