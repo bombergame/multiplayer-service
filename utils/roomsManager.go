@@ -7,27 +7,45 @@ import (
 	"sync"
 )
 
+const (
+	RoomNotFoundMessage = "room not found"
+)
+
 type RoomsManager struct {
-	rwMutex *sync.RWMutex
-	rooms   map[uuid.UUID]*rooms.Room
+	rwMutex     *sync.RWMutex
+	rooms       map[uuid.UUID]*rooms.Room
+	numRooms    int64
+	notFoundErr *errs.NotFoundError
 }
 
 func NewRoomsManager() *RoomsManager {
 	return &RoomsManager{
-		rwMutex: &sync.RWMutex{},
-		rooms:   make(map[uuid.UUID]*rooms.Room, 0),
+		rwMutex:     &sync.RWMutex{},
+		rooms:       make(map[uuid.UUID]*rooms.Room, 0),
+		numRooms:    0,
+		notFoundErr: errs.NewNotFoundError(RoomNotFoundMessage).(*errs.NotFoundError),
 	}
+}
+
+func (rm *RoomsManager) NumRooms() int64 {
+	return rm.NumRooms()
 }
 
 func (rm *RoomsManager) AddRoom(r *rooms.Room) error {
 	rm.rwMutex.Lock()
 	defer rm.rwMutex.Unlock()
 
-	if _, ok := rm.rooms[r.ID()]; ok {
-		return errs.NewDuplicateError("room already exists")
+	for {
+		id := uuid.NewV4()
+		if _, ok := rm.rooms[id]; !ok {
+			r.SetID(id)
+			break
+		}
 	}
 
 	rm.rooms[r.ID()] = r
+	rm.numRooms++
+
 	return nil
 }
 
@@ -37,8 +55,23 @@ func (rm *RoomsManager) GetRoom(id uuid.UUID) (*rooms.Room, error) {
 
 	r, ok := rm.rooms[id]
 	if !ok {
-		return nil, errs.NewNotFoundError("room not found")
+		return nil, rm.notFoundErr
 	}
 
 	return r, nil
+}
+
+func (rm *RoomsManager) DeleteRoom(id uuid.UUID) error {
+	rm.rwMutex.Lock()
+	defer rm.rwMutex.Unlock()
+
+	_, ok := rm.rooms[id]
+	if !ok {
+		return rm.notFoundErr
+	}
+
+	delete(rm.rooms, id)
+	rm.numRooms--
+
+	return nil
 }

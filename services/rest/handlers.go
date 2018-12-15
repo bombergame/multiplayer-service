@@ -3,7 +3,6 @@ package rest
 import (
 	"github.com/bombergame/multiplayer-service/domains"
 	"github.com/bombergame/multiplayer-service/game/rooms"
-	"github.com/satori/go.uuid"
 	"net/http"
 )
 
@@ -24,15 +23,14 @@ func (srv *Service) createRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mRoom.ID = uuid.NewV4()
 	room := rooms.NewRoom(mRoom)
-
 	err = srv.components.RoomsManager.AddRoom(room)
 	if err != nil {
 		srv.WriteErrorWithBody(w, err)
 		return
 	}
-
 	room.RunGame()
+
+	mRoom.ID = room.ID()
 	srv.WriteOkWithBody(w, mRoom)
 }

@@ -47,7 +47,7 @@ type Room struct {
 
 func NewRoom(r domains.Room) *Room {
 	return &Room{
-		id:    r.ID,
+		id:    uuid.Nil,
 		title: r.Title,
 
 		state: gamestate.Pending,
@@ -72,6 +72,10 @@ func NewRoom(r domains.Room) *Room {
 
 func (r *Room) ID() uuid.UUID {
 	return r.id
+}
+
+func (r *Room) SetID(id uuid.UUID) {
+	r.id = id
 }
 
 func (r *Room) CmdChan() *gamecommands.CmdChan {
