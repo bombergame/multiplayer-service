@@ -20,7 +20,7 @@ import (
 const (
 	DefaultAnonymousPlayerID = -1
 
-	TickerPeriod          = 50 * time.Millisecond
+	TickerPeriod          = 20 * time.Millisecond
 	BroadcastTickerPeriod = time.Second
 )
 

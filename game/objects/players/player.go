@@ -158,7 +158,7 @@ func (p *Player) handleCommands() {
 
 const (
 	DefaultStepSize        = 1
-	DefaultMinStepInterval = time.Second / 2
+	DefaultMinStepInterval = time.Second / 10
 )
 
 func (p *Player) handleCmd(c playercommands.Cmd) {
