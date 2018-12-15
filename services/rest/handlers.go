@@ -24,12 +24,14 @@ func (srv *Service) createRoom(w http.ResponseWriter, r *http.Request) {
 	}
 
 	room := rooms.NewRoom(mRoom)
-	err = srv.components.RoomsManager.AddRoom(room)
+	n, err := srv.components.RoomsManager.AddRoom(room)
 	if err != nil {
 		srv.WriteErrorWithBody(w, err)
 		return
 	}
 	room.RunGame()
+
+	srv.metrics.numRooms.Set(float64(n))
 
 	mRoom.ID = room.ID()
 	srv.WriteOkWithBody(w, mRoom)

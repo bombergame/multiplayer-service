@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )
@@ -16,6 +17,7 @@ type Service struct {
 	rest.Service
 	config     Config
 	components Components
+	metrics    Metrics
 	upgrader   websocket.Upgrader
 }
 
@@ -28,6 +30,10 @@ type Components struct {
 	RoomsManager *utils.RoomsManager
 }
 
+type Metrics struct {
+	numRooms prometheus.Gauge
+}
+
 func NewService(cf Config, cpn Components) *Service {
 	cf.Host, cf.Port = consts.EmptyString, config.HttpPort
 
@@ -38,6 +44,9 @@ func NewService(cf Config, cpn Components) *Service {
 		),
 		config:     cf,
 		components: cpn,
+		metrics: Metrics{
+			numRooms: NewNumRooms(),
+		},
 		upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
 				return true

@@ -27,11 +27,7 @@ func NewRoomsManager() *RoomsManager {
 	}
 }
 
-func (rm *RoomsManager) NumRooms() int64 {
-	return rm.NumRooms()
-}
-
-func (rm *RoomsManager) AddRoom(r *rooms.Room) error {
+func (rm *RoomsManager) AddRoom(r *rooms.Room) (int64, error) {
 	rm.rwMutex.Lock()
 	defer rm.rwMutex.Unlock()
 
@@ -46,7 +42,7 @@ func (rm *RoomsManager) AddRoom(r *rooms.Room) error {
 	rm.rooms[r.ID()] = r
 	rm.numRooms++
 
-	return nil
+	return rm.numRooms, nil
 }
 
 func (rm *RoomsManager) GetRoom(id uuid.UUID) (*rooms.Room, error) {
@@ -61,17 +57,17 @@ func (rm *RoomsManager) GetRoom(id uuid.UUID) (*rooms.Room, error) {
 	return r, nil
 }
 
-func (rm *RoomsManager) DeleteRoom(id uuid.UUID) error {
+func (rm *RoomsManager) DeleteRoom(id uuid.UUID) (int64, error) {
 	rm.rwMutex.Lock()
 	defer rm.rwMutex.Unlock()
 
 	_, ok := rm.rooms[id]
 	if !ok {
-		return rm.notFoundErr
+		return rm.numRooms, rm.notFoundErr
 	}
 
 	delete(rm.rooms, id)
 	rm.numRooms--
 
-	return nil
+	return rm.numRooms, nil
 }
