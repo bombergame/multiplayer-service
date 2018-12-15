@@ -49,9 +49,6 @@ func NewService(cf Config, cpn Components) *Service {
 	mx.Handle("/multiplayer/rooms", handlers.MethodHandler{
 		http.MethodPost: srv.WithAuth(http.HandlerFunc(srv.createRoom)),
 	})
-	mx.Handle("/multiplayer/rooms/{room_id:[0-9-a-z]+}", handlers.MethodHandler{
-		http.MethodDelete: srv.WithAuth(http.HandlerFunc(srv.deleteRoom)),
-	})
 	mx.Handle("/multiplayer/rooms/{room_id:[0-9-a-z]+}/ws", http.HandlerFunc(srv.handleGameplay))
 	mx.Handle("/metrics", promhttp.Handler())
 

@@ -36,7 +36,3 @@ func (srv *Service) createRoom(w http.ResponseWriter, r *http.Request) {
 	room.RunGame()
 	srv.WriteOkWithBody(w, mRoom)
 }
-
-func (srv *Service) deleteRoom(w http.ResponseWriter, r *http.Request) {
-	//TODO
-}
