@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )
 
@@ -52,6 +53,7 @@ func NewService(cf Config, cpn Components) *Service {
 		http.MethodDelete: srv.WithAuth(http.HandlerFunc(srv.deleteRoom)),
 	})
 	mx.Handle("/multiplayer/rooms/{room_id:[0-9-a-z]+}/ws", http.HandlerFunc(srv.handleGameplay))
+	mx.Handle("/metrics", promhttp.Handler())
 
 	srv.SetHandler(srv.WithLogs(srv.WithRecover(mx)))
 
