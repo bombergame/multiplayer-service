@@ -141,8 +141,8 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 }
 
 const (
-	EmptyProb     = 0.5
-	WeakWallProb  = 0.7
+	EmptyProb     = 0.4
+	WeakWallProb  = 0.8
 	SolidWallProb = 1.0
 )
 
