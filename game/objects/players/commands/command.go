@@ -10,6 +10,8 @@ const (
 	MoveDown       = MovementPrefix + "down"
 	MoveLeft       = MovementPrefix + "left"
 	MoveRight      = MovementPrefix + "right"
+
+	DropBomb = Prefix + "drop.bomb"
 )
 
 type CmdChan chan Cmd

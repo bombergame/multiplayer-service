@@ -17,6 +17,8 @@ const (
 	Type = "player"
 )
 
+type DropBombHandler func(physics.PositionVec2D)
+
 type Player struct {
 	id int64
 
@@ -32,6 +34,7 @@ type Player struct {
 
 	objGetter       objects.CellObjectGetter
 	movementHandler objects.MovementHandler
+	dropBombHandler DropBombHandler
 	changeHandler   objects.ChangeHandler
 
 	mu *sync.Mutex
@@ -86,6 +89,10 @@ func (p *Player) SetOutChan(outChan *ws.OutChan) {
 
 func (p *Player) SetMovementHandler(h objects.MovementHandler) {
 	p.movementHandler = h
+}
+
+func (p *Player) DropBombHandler(h DropBombHandler) {
+	p.dropBombHandler = h
 }
 
 func (p *Player) SetChangeHandler(h objects.ChangeHandler) {
@@ -155,6 +162,10 @@ func (p *Player) move(newPos physics.PositionVec2D) {
 	p.changeHandler(p)
 }
 
+func (p *Player) dropBomb() {
+	p.dropBombHandler(p.transform.Position)
+}
+
 func (p *Player) handleCommands() {
 	for {
 		select {
@@ -184,5 +195,8 @@ func (p *Player) handleCmd(c playercommands.Cmd) {
 
 	case playercommands.MoveRight:
 		p.move(p.transform.Position.Right(p.movement.StepSize))
+
+	case playercommands.DropBomb:
+		p.dropBomb()
 	}
 }

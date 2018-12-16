@@ -54,6 +54,21 @@ func (f *Field) PlacePlayers(pAll map[int64]*players.Player) {
 			break
 		}
 
+		f.objects[y][x] = p
+		x++
+	}
+}
+
+const (
+	EmptyProb     = 0.5
+	WeakWallProb  = 0.6
+	SolidWallProb = 1.0
+)
+
+func (f *Field) SpawnObjects(pAll map[int64]*players.Player, h objects.ChangeHandler) {
+	objID := objects.ObjectID(0)
+
+	for _, p := range pAll {
 		p.SetObjectType(players.Type)
 		p.SetCellObjectGetter(func(pos physics.PositionVec2D) (objects.GameObject, *errs.InvalidCellIndexError) {
 			x, y := physics.Integer(pos.X), physics.Integer(pos.Y)
@@ -69,20 +84,7 @@ func (f *Field) PlacePlayers(pAll map[int64]*players.Player) {
 			f.objects[yOld][xOld] = nil
 			f.objects[yNew][xNew] = obj
 		})
-
-		f.objects[y][x] = p
-		x++
 	}
-}
-
-const (
-	EmptyProb     = 0.5
-	WeakWallProb  = 0.6
-	SolidWallProb = 1.0
-)
-
-func (f *Field) SpawnObjects(h objects.ChangeHandler) {
-	objID := objects.ObjectID(0)
 
 	for i := physics.Integer(0); i < f.size.Height; i++ {
 		for j := physics.Integer(0); j < f.size.Width; j++ {
