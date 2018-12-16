@@ -65,10 +65,13 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 
 			x, y := posToInt(pos)
 			if x < 0 || x >= f.size.Width || y < 0 || y >= f.size.Height {
+				log.Println("Cannot move. Cell index out of range")
 				return nil, f.invalidCellIndexError
 			}
 			if f.explosives[y][x] != nil {
+				log.Println("Cannot move. Explosive")
 				if b, ok := f.explosives[y][x].(*bombs.Bomb); ok {
+					log.Println("Cannot move. Explosive is a bomb")
 					return b, nil
 				}
 			}
