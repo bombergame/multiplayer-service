@@ -5,6 +5,7 @@ package players
 import (
 	json "encoding/json"
 	objects "github.com/bombergame/multiplayer-service/game/objects"
+	state "github.com/bombergame/multiplayer-service/game/objects/players/state"
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -39,6 +40,8 @@ func easyjsonAcd0c35fDecodeGithubComBombergameMultiplayerServiceGameObjectsPlaye
 		switch key {
 		case "id":
 			out.ID = int64(in.Int64())
+		case "state":
+			out.State = state.State(in.String())
 		case "transform":
 			if data := in.Raw(); in.Ok() {
 				in.AddError((out.Transform).UnmarshalJSON(data))
@@ -74,6 +77,16 @@ func easyjsonAcd0c35fEncodeGithubComBombergameMultiplayerServiceGameObjectsPlaye
 			out.RawString(prefix)
 		}
 		out.Int64(int64(in.ID))
+	}
+	{
+		const prefix string = ",\"state\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.State))
 	}
 	{
 		const prefix string = ",\"transform\":"

@@ -130,12 +130,14 @@ func (p *Player) Update(duration time.Duration) {
 type MessageData struct {
 	objects.MessageData
 	ID        int64                          `json:"id"`
+	State     playerstate.State              `json:"state"`
 	Transform components.Transform           `json:"transform"`
 	Movement  components.MovementMessageData `json:"movement"`
 }
 
 func (p *Player) GetMessageData() MessageData {
 	return MessageData{
+		State: p.state,
 		MessageData: objects.MessageData{
 			ObjectID:   p.objectID,
 			ObjectType: p.objectType,
