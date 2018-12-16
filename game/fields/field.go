@@ -81,8 +81,7 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 			return f.objects[y][x], nil
 		})
 		p.SetMovementHandler(func(pOld, pNew physics.PositionVec2D) {
-			log.Println("Before move:")
-			f.print()
+			f.print("Before move: \n")
 
 			xOld, yOld := posToInt(pOld)
 			xNew, yNew := posToInt(pNew)
@@ -90,8 +89,7 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 			f.objects[yOld][xOld] = nil
 			f.objects[yNew][xNew] = obj
 
-			log.Println("After move:")
-			f.print()
+			f.print("After move: \n")
 		})
 		p.SetDropBombHandler(func(pos physics.PositionVec2D) {
 			x, y := posToInt(pos)
@@ -229,23 +227,25 @@ func posToInt(p physics.PositionVec2D) (physics.Integer, physics.Integer) {
 	return physics.Integer(p.X), physics.Integer(p.Y)
 }
 
-func (f *Field) print() {
+func (f *Field) print(message string) {
+	s := fmt.Sprintf(message)
 	for i := physics.Integer(0); i < f.size.Height; i++ {
 		for j := physics.Integer(0); j < f.size.Width; j++ {
 			if f.explosives[i][j] != nil {
-				fmt.Print("o")
+				s += fmt.Sprint("o")
 			} else if f.objects[i][j] != nil {
 				if f.objects[i][j].ObjectType() == players.Type {
-					fmt.Print("P")
+					s += fmt.Sprint("P")
 				} else if f.objects[i][j].ObjectType() == weakwalls.Type {
-					fmt.Print("+")
+					s += fmt.Sprint("+")
 				} else if f.objects[i][j].ObjectType() == solidwalls.Type {
-					fmt.Print("#")
+					s += fmt.Sprint("#")
 				}
 			} else {
-				fmt.Print(" ")
+				s += fmt.Sprint(" ")
 			}
 		}
-		fmt.Println()
+		s += fmt.Sprintln()
 	}
+	log.Println(s)
 }
