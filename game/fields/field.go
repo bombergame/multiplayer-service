@@ -4,6 +4,7 @@ import (
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/bombs"
+	"github.com/bombergame/multiplayer-service/game/objects/bombs/state"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/solid"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/weak"
@@ -54,21 +55,32 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 	n := physics.Integer(len(pAll))
 	pArr := make([]*players.Player, 0, n)
 
+	posToInt := func(p physics.PositionVec2D) (physics.Integer, physics.Integer) {
+		return physics.Integer(p.X), physics.Integer(p.Y)
+	}
+
 	for _, p := range pAll {
 		p.SetObjectType(players.Type)
 		p.SetCellObjectGetter(func(pos physics.PositionVec2D) (objects.GameObject, *errs.InvalidCellIndexError) {
-			x, y := physics.Integer(pos.X), physics.Integer(pos.Y)
+			x, y := posToInt(pos)
 			if x < 0 || x >= f.size.Width || y < 0 || y >= f.size.Height {
 				return nil, f.invalidCellIndexError
 			}
 			return f.objects[y][x], nil
 		})
 		p.SetMovementHandler(func(pOld, pNew physics.PositionVec2D) {
-			xOld, yOld := physics.Integer(pOld.X), physics.Integer(pOld.Y)
-			xNew, yNew := physics.Integer(pNew.X), physics.Integer(pNew.Y)
+			xOld, yOld := posToInt(pOld)
+			xNew, yNew := posToInt(pNew)
 			obj := f.objects[yOld][xOld]
 			f.objects[yOld][xOld] = nil
 			f.objects[yNew][xNew] = obj
+		})
+		p.DropBombHandler(func(pos physics.PositionVec2D) {
+			x, y := posToInt(pos)
+			if f.bombs[y][x].State() == bombstate.Placed {
+				return
+			}
+			f.bombs[y][x].Spawn(pos)
 		})
 
 		pArr = append(pArr, p)

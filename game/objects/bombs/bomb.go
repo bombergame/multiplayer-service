@@ -57,6 +57,10 @@ func (b *Bomb) SetObjectID(id objects.ObjectID) {
 	b.objectID = id
 }
 
+func (b *Bomb) State() bombstate.State {
+	return b.state
+}
+
 func (b *Bomb) Transform() components.Transform {
 	return b.transform
 }
