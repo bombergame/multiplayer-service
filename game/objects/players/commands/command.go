@@ -5,7 +5,7 @@ type Cmd string
 const (
 	Prefix = "player."
 
-	MovementPrefix = "move."
+	MovementPrefix = Prefix + "move."
 	MoveUp         = MovementPrefix + "up"
 	MoveDown       = MovementPrefix + "down"
 	MoveLeft       = MovementPrefix + "left"

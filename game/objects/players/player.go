@@ -165,6 +165,8 @@ func (p *Player) move(newPos physics.PositionVec2D) {
 		return
 	}
 
+	log.Println("Time interval ok")
+
 	obj, err := p.objGetter(newPos)
 	if err != nil || obj != nil {
 		return
