@@ -159,7 +159,7 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 			objID++
 			obj.SetObjectID(objID)
 			obj.SetChangeHandler(h)
-			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(y), physics.Coordinate(x)))
+			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(x), physics.Coordinate(y)))
 		}
 	}
 
