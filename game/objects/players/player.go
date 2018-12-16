@@ -9,6 +9,7 @@ import (
 	"github.com/bombergame/multiplayer-service/game/objects/players/state"
 	"github.com/bombergame/multiplayer-service/game/physics"
 	"github.com/bombergame/multiplayer-service/utils/ws"
+	"log"
 	"sync"
 	"time"
 )
@@ -198,6 +199,7 @@ const (
 )
 
 func (p *Player) handleCmd(c playercommands.Cmd) {
+	log.Println("Command received: ", c)
 	switch c {
 	case playercommands.MoveUp:
 		p.move(p.transform.Position.Up(p.movement.StepSize))

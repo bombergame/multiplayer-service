@@ -125,6 +125,8 @@ func (r *Room) AddPlayer(p *players.Player) error {
 
 	r.players[p.ID()] = p
 	p.SetDeathHandler(func(p *players.Player) {
+		log.Println("Player death: ", p)
+
 		r.numAlivePlayers--
 		if r.numAlivePlayers == 0 {
 			r.endGame()
@@ -142,6 +144,8 @@ func (r *Room) DeletePlayer(p *players.Player) {
 
 	delete(r.players, p.ID())
 	r.broadcastState()
+
+	log.Println("Player deleted: ", p)
 }
 
 func (r *Room) withLock(f func()) {
@@ -160,6 +164,7 @@ func (r *Room) startGame() {
 
 		r.field.PlaceObjects(r.players)
 		r.field.SpawnObjects(func(obj objects.GameObject) {
+			log.Println("Change: ", obj)
 			r.broadcast(ws.OutMessage{
 				Type: objects.MessageType,
 				Data: obj.Serialize(),
@@ -175,6 +180,8 @@ func (r *Room) startGame() {
 	default:
 		return
 	}
+
+	log.Println("Start game")
 }
 
 func (r *Room) stopGame() {
@@ -184,11 +191,15 @@ func (r *Room) stopGame() {
 
 	r.state = gamestate.Paused
 	r.broadcastState()
+
+	log.Println("Stop game")
 }
 
 func (r *Room) endGame() {
 	r.state = gamestate.Off
 	r.broadcastState()
+
+	log.Println("End game")
 }
 
 func (r *Room) findFreeAnonID() int64 {
@@ -260,6 +271,8 @@ func (r *Room) broadcastState() {
 		},
 	}
 
+	log.Println("Room state: ", message)
+
 	r.broadcast(message)
 }
 
@@ -274,7 +287,6 @@ func (r *Room) broadcastTicker(t time.Duration) {
 }
 
 func (r *Room) broadcast(message ws.OutMessage) {
-	log.Println(message)
 	for _, p := range r.players {
 		*p.OutChan() <- message
 	}
