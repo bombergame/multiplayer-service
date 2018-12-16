@@ -14,7 +14,7 @@ import (
 type Field struct {
 	size physics.Size2D
 
-	cells                 [][]objects.GameObject
+	objects               [][]objects.GameObject
 	invalidCellIndexError *errs.InvalidCellIndexError
 }
 
@@ -22,7 +22,7 @@ func NewField(size physics.Size2D) *Field {
 	f := &Field{
 		size: size,
 
-		cells: func() [][]objects.GameObject {
+		objects: func() [][]objects.GameObject {
 			c := make([][]objects.GameObject, size.Height)
 			for i := physics.Integer(0); i < size.Height; i++ {
 				c[i] = make([]objects.GameObject, size.Width)
@@ -56,17 +56,17 @@ func (f *Field) PlacePlayers(pAll map[int64]*players.Player) {
 			if x < 0 || x >= f.size.Width || y < 0 || y >= f.size.Height {
 				return nil, f.invalidCellIndexError
 			}
-			return f.cells[y][x], nil
+			return f.objects[y][x], nil
 		})
 		p.SetMovementHandler(func(pOld, pNew physics.PositionVec2D) {
 			xOld, yOld := physics.Integer(pOld.X), physics.Integer(pOld.Y)
 			xNew, yNew := physics.Integer(pNew.X), physics.Integer(pNew.Y)
-			obj := f.cells[yOld][xOld]
-			f.cells[yOld][xOld] = nil
-			f.cells[yNew][xNew] = obj
+			obj := f.objects[yOld][xOld]
+			f.objects[yOld][xOld] = nil
+			f.objects[yNew][xNew] = obj
 		})
 
-		f.cells[y][x] = p
+		f.objects[y][x] = p
 		x++
 	}
 }
@@ -84,11 +84,11 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 		for j := physics.Integer(0); j < f.size.Width; j++ {
 			var obj objects.GameObject
 
-			if f.cells[i][j] == nil {
+			if f.objects[i][j] == nil {
 				prob := rand.NormFloat64()
 
 				if prob < EmptyProb {
-					f.cells[i][j] = nil
+					f.objects[i][j] = nil
 					continue
 				}
 
@@ -100,7 +100,7 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 					obj.SetObjectType(solidwalls.Type)
 				}
 			} else {
-				obj = f.cells[i][j]
+				obj = f.objects[i][j]
 			}
 
 			objID++
@@ -108,7 +108,7 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 			obj.SetChangeHandler(h)
 			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(i), physics.Coordinate(j)))
 
-			f.cells[i][j] = obj
+			f.objects[i][j] = obj
 		}
 	}
 }
@@ -116,10 +116,10 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 func (f *Field) UpdateObjects(d time.Duration) {
 	for i := physics.Integer(0); i < f.size.Height; i++ {
 		for j := physics.Integer(0); j < f.size.Width; j++ {
-			if f.cells[i][j] == nil {
+			if f.objects[i][j] == nil {
 				continue
 			}
-			f.cells[i][j].Update(d)
+			f.objects[i][j].Update(d)
 		}
 	}
 }
