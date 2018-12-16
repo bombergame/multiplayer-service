@@ -140,6 +140,9 @@ func (r *Room) startGame() {
 
 	switch r.state {
 	case gamestate.Pending:
+		r.state = gamestate.On
+		r.broadcastState()
+
 		r.field.PlaceObjects(r.players)
 		r.field.SpawnObjects(func(obj objects.GameObject) {
 			r.broadcast(ws.OutMessage{
@@ -147,17 +150,16 @@ func (r *Room) startGame() {
 				Data: obj.Serialize(),
 			})
 		})
-		r.state = gamestate.On
+
 		go r.gameLoop()
 
 	case gamestate.Paused:
 		r.state = gamestate.On
+		r.broadcastState()
 
 	default:
 		return
 	}
-
-	r.broadcastState()
 }
 
 func (r *Room) stopGame() {
