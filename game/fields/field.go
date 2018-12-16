@@ -1,6 +1,7 @@
 package fields
 
 import (
+	"fmt"
 	"github.com/bombergame/multiplayer-service/game/cache"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects"
@@ -80,13 +81,17 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 			return f.objects[y][x], nil
 		})
 		p.SetMovementHandler(func(pOld, pNew physics.PositionVec2D) {
-			log.Println("Movement: ", pOld, pNew)
+			log.Println("Before move:")
+			f.print()
 
 			xOld, yOld := posToInt(pOld)
 			xNew, yNew := posToInt(pNew)
 			obj := f.objects[yOld][xOld]
 			f.objects[yOld][xOld] = nil
 			f.objects[yNew][xNew] = obj
+
+			log.Println("After move:")
+			f.print()
 		})
 		p.SetDropBombHandler(func(pos physics.PositionVec2D) {
 			x, y := posToInt(pos)
@@ -222,4 +227,23 @@ func (f *Field) destroyObject(x, y physics.Integer) {
 
 func posToInt(p physics.PositionVec2D) (physics.Integer, physics.Integer) {
 	return physics.Integer(p.X), physics.Integer(p.Y)
+}
+
+func (f *Field) print() {
+	for i := physics.Integer(0); i < f.size.Height; i++ {
+		for j := physics.Integer(0); j < f.size.Width; j++ {
+			if f.explosives[i][j] != nil {
+				fmt.Print("o")
+			} else if f.objects[i][j] != nil {
+				if f.objects[i][j].ObjectType() == players.Type {
+					fmt.Print("P")
+				} else if f.objects[i][j].ObjectType() == weakwalls.Type {
+					fmt.Print("+")
+				} else if f.objects[i][j].ObjectType() == solidwalls.Type {
+					fmt.Print("#")
+				}
+			}
+		}
+		fmt.Println()
+	}
 }
