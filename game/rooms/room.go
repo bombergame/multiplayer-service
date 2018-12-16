@@ -139,14 +139,13 @@ func (r *Room) startGame() {
 
 	switch r.state {
 	case gamestate.Pending:
-		r.field.PlacePlayers(r.players)
+		r.field.PlaceObjects(r.players)
 		r.field.SpawnObjects(func(obj objects.GameObject) {
 			r.broadcast(ws.OutMessage{
 				Type: objects.MessageType,
 				Data: obj.Serialize(),
 			})
 		})
-
 		r.state = gamestate.On
 		go r.gameLoop()
 

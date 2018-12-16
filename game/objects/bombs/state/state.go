@@ -3,6 +3,7 @@ package bombstate
 type State string
 
 const (
+	Inactive  = State("inactive")
 	Placed    = State("placed")
 	Detonated = State("detonated")
 )

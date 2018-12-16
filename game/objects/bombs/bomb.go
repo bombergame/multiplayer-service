@@ -11,6 +11,10 @@ import (
 )
 
 const (
+	Type = "bomb"
+)
+
+const (
 	DefaultExplosionRadius  = 2
 	DefaultExplosionTimeout = 3 * time.Second
 )
@@ -31,6 +35,7 @@ type Bomb struct {
 
 func NewBomb() *Bomb {
 	return &Bomb{
+		state:            bombstate.Inactive,
 		explosionRadius:  DefaultExplosionRadius,
 		explosionTimeout: DefaultExplosionTimeout,
 	}

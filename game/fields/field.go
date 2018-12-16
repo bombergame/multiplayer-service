@@ -1,7 +1,6 @@
 package fields
 
 import (
-	"github.com/bombergame/multiplayer-service/game/cache"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/bombs"
@@ -16,8 +15,8 @@ import (
 type Field struct {
 	size physics.Size2D
 
-	objects    [][]objects.GameObject
-	bombsCache *cache.Queue
+	bombs   [][]*bombs.Bomb
+	objects [][]objects.GameObject
 
 	invalidCellIndexError *errs.InvalidCellIndexError
 }
@@ -26,12 +25,19 @@ func NewField(size physics.Size2D) *Field {
 	f := &Field{
 		size: size,
 
-		objects: func() [][]objects.GameObject {
-			c := make([][]objects.GameObject, size.Height)
+		bombs: func() [][]*bombs.Bomb {
+			b := make([][]*bombs.Bomb, size.Height)
 			for i := physics.Integer(0); i < size.Height; i++ {
-				c[i] = make([]objects.GameObject, size.Width)
+				b[i] = make([]*bombs.Bomb, size.Width)
 			}
-			return c
+			return b
+		}(),
+		objects: func() [][]objects.GameObject {
+			o := make([][]objects.GameObject, size.Height)
+			for i := physics.Integer(0); i < size.Height; i++ {
+				o[i] = make([]objects.GameObject, size.Width)
+			}
+			return o
 		}(),
 
 		invalidCellIndexError: errs.NewInvalidCellIndexError(),
@@ -44,29 +50,9 @@ func (f *Field) Size() physics.Size2D {
 	return f.size
 }
 
-func (f *Field) PlacePlayers(pAll map[int64]*players.Player) {
-	x, y := physics.Integer(0), physics.Integer(0)
-	for _, p := range pAll {
-		if x == f.size.Width {
-			y++
-		}
-		if y == f.size.Height {
-			break
-		}
-
-		f.objects[y][x] = p
-		x++
-	}
-}
-
-const (
-	EmptyProb     = 0.5
-	WeakWallProb  = 0.6
-	SolidWallProb = 1.0
-)
-
-func (f *Field) SpawnObjects(pAll map[int64]*players.Player, h objects.ChangeHandler) {
-	objID := objects.ObjectID(0)
+func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
+	n := physics.Integer(len(pAll))
+	pArr := make([]*players.Player, 0, n)
 
 	for _, p := range pAll {
 		p.SetObjectType(players.Type)
@@ -84,20 +70,28 @@ func (f *Field) SpawnObjects(pAll map[int64]*players.Player, h objects.ChangeHan
 			f.objects[yOld][xOld] = nil
 			f.objects[yNew][xNew] = obj
 		})
+
+		pArr = append(pArr, p)
 	}
 
-	for i := physics.Integer(0); i < f.size.Height; i++ {
-		for j := physics.Integer(0); j < f.size.Width; j++ {
-			var obj objects.GameObject
+	index := 0
+	d := f.size.Height / n
 
-			if f.objects[i][j] == nil {
+	for y := physics.Integer(0); y < f.size.Height; y++ {
+		if y%d == 0 {
+			x := rand.Intn(int(f.size.Width))
+			f.objects[y][x] = pArr[index]
+			index++
+		} else {
+			for x := physics.Integer(1); x < f.size.Width-2; x++ {
 				prob := rand.NormFloat64()
 
 				if prob < EmptyProb {
-					f.objects[i][j] = nil
+					f.objects[y][x] = nil
 					continue
 				}
 
+				var obj objects.GameObject
 				if prob < WeakWallProb {
 					obj = weakwalls.NewWall()
 					obj.SetObjectType(weakwalls.Type)
@@ -105,27 +99,45 @@ func (f *Field) SpawnObjects(pAll map[int64]*players.Player, h objects.ChangeHan
 					obj = solidwalls.NewWall()
 					obj.SetObjectType(solidwalls.Type)
 				}
-			} else {
-				obj = f.objects[i][j]
+				f.objects[y][x] = obj
+			}
+		}
+
+		for x := physics.Integer(0); x < f.size.Width; x++ {
+			var b *bombs.Bomb
+			b = bombs.NewBomb()
+			b.SetObjectType(bombs.Type)
+			f.bombs[y][x] = b
+		}
+	}
+}
+
+const (
+	EmptyProb     = 0.5
+	WeakWallProb  = 0.6
+	SolidWallProb = 1.0
+)
+
+func (f *Field) SpawnObjects(h objects.ChangeHandler) {
+	objID := objects.ObjectID(0)
+
+	for y := physics.Integer(0); y < f.size.Height; y++ {
+		for x := physics.Integer(0); x < f.size.Width; x++ {
+			if f.objects[y][x] == nil {
+				continue
 			}
 
+			obj := f.objects[y][x]
 			objID++
 			obj.SetObjectID(objID)
 			obj.SetChangeHandler(h)
-			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(i), physics.Coordinate(j)))
+			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(y), physics.Coordinate(x)))
 
-			f.objects[i][j] = obj
+			b := f.bombs[y][x]
+			objID++
+			b.SetObjectID(objID)
+			b.SetChangeHandler(h)
 		}
-	}
-
-	f.bombsCache = cache.NewQueue()
-	for i := physics.Integer(0); i < f.size.Width*f.size.Height; i++ {
-		bomb := bombs.NewBomb()
-
-		objID++
-		bomb.SetObjectID(objID)
-
-		f.bombsCache.Add(bombs.NewBomb())
 	}
 }
 
