@@ -223,10 +223,10 @@ func (r *Room) gameLoop() {
 			if tCur.Sub(tPrevBcst) > BroadcastTickerPeriod {
 				r.broadcastTicker(t)
 				tPrevBcst = tCur
+				r.endGame()
 			}
 		}
 
-		r.endGame()
 		r.mu.Unlock()
 	}
 }
