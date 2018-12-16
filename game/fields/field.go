@@ -1,8 +1,10 @@
 package fields
 
 import (
+	"github.com/bombergame/multiplayer-service/game/cache"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects"
+	"github.com/bombergame/multiplayer-service/game/objects/bombs"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/solid"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/weak"
@@ -14,7 +16,9 @@ import (
 type Field struct {
 	size physics.Size2D
 
-	objects               [][]objects.GameObject
+	objects    [][]objects.GameObject
+	bombsCache *cache.Queue
+
 	invalidCellIndexError *errs.InvalidCellIndexError
 }
 
@@ -110,6 +114,16 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 
 			f.objects[i][j] = obj
 		}
+	}
+
+	f.bombsCache = cache.NewQueue()
+	for i := physics.Integer(0); i < f.size.Width*f.size.Height; i++ {
+		bomb := bombs.NewBomb()
+
+		objID++
+		bomb.SetObjectID(objID)
+
+		f.bombsCache.Add(bombs.NewBomb())
 	}
 }
 
