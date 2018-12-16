@@ -23,9 +23,9 @@ func NewWall() *Wall {
 	}
 }
 
-func (w *Wall) Break() {
+func (w *Wall) Collapse() {
 	w.state = weakwallstate.Down
-	//TODO
+	w.Wall.ChangeHandler()(w)
 }
 
 //easyjson:json

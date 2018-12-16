@@ -1,10 +1,10 @@
 package fields
 
 import (
+	"github.com/bombergame/multiplayer-service/game/cache"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/bombs"
-	"github.com/bombergame/multiplayer-service/game/objects/bombs/state"
 	"github.com/bombergame/multiplayer-service/game/objects/players"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/solid"
 	"github.com/bombergame/multiplayer-service/game/objects/walls/weak"
@@ -16,8 +16,10 @@ import (
 type Field struct {
 	size physics.Size2D
 
-	bombs   [][]*bombs.Bomb
-	objects [][]objects.GameObject
+	bCache *cache.Queue
+
+	objects    [][]objects.GameObject
+	explosives [][]objects.ExplosiveObject
 
 	invalidCellIndexError *errs.InvalidCellIndexError
 }
@@ -26,10 +28,10 @@ func NewField(size physics.Size2D) *Field {
 	f := &Field{
 		size: size,
 
-		bombs: func() [][]*bombs.Bomb {
-			b := make([][]*bombs.Bomb, size.Height)
+		explosives: func() [][]objects.ExplosiveObject {
+			b := make([][]objects.ExplosiveObject, size.Height)
 			for i := physics.Integer(0); i < size.Height; i++ {
-				b[i] = make([]*bombs.Bomb, size.Width)
+				b[i] = make([]objects.ExplosiveObject, size.Width)
 			}
 			return b
 		}(),
@@ -55,16 +57,17 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 	n := physics.Integer(len(pAll))
 	pArr := make([]*players.Player, 0, n)
 
-	posToInt := func(p physics.PositionVec2D) (physics.Integer, physics.Integer) {
-		return physics.Integer(p.X), physics.Integer(p.Y)
-	}
-
 	for _, p := range pAll {
 		p.SetObjectType(players.Type)
 		p.SetCellObjectGetter(func(pos physics.PositionVec2D) (objects.GameObject, *errs.InvalidCellIndexError) {
 			x, y := posToInt(pos)
 			if x < 0 || x >= f.size.Width || y < 0 || y >= f.size.Height {
 				return nil, f.invalidCellIndexError
+			}
+			if f.explosives[y][x] != nil {
+				if b, ok := f.explosives[y][x].(*bombs.Bomb); ok {
+					return b, nil
+				}
 			}
 			return f.objects[y][x], nil
 		})
@@ -75,12 +78,16 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 			f.objects[yOld][xOld] = nil
 			f.objects[yNew][xNew] = obj
 		})
-		p.DropBombHandler(func(pos physics.PositionVec2D) {
+		p.SetDropBombHandler(func(pos physics.PositionVec2D) {
 			x, y := posToInt(pos)
-			if f.bombs[y][x].State() == bombstate.Placed {
+			if f.explosives[y][x] != nil {
 				return
 			}
-			f.bombs[y][x].Spawn(pos)
+
+			v, _ := f.bCache.Dequeue()
+			b := v.(*bombs.Bomb)
+			b.Spawn(pos)
+			f.explosives[y][x] = b
 		})
 
 		pArr = append(pArr, p)
@@ -115,13 +122,6 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 				f.objects[y][x] = obj
 			}
 		}
-
-		for x := physics.Integer(0); x < f.size.Width; x++ {
-			var b *bombs.Bomb
-			b = bombs.NewBomb()
-			b.SetObjectType(bombs.Type)
-			f.bombs[y][x] = b
-		}
 	}
 }
 
@@ -145,22 +145,67 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 			obj.SetObjectID(objID)
 			obj.SetChangeHandler(h)
 			obj.Spawn(physics.GetPositionVec2D(physics.Coordinate(y), physics.Coordinate(x)))
-
-			b := f.bombs[y][x]
-			objID++
-			b.SetObjectID(objID)
-			b.SetChangeHandler(h)
 		}
+	}
+
+	f.bCache = cache.NewQueue()
+	for i := physics.Integer(0); i < f.size.Width*f.size.Height; i++ {
+		b := bombs.NewBomb()
+
+		objID++
+		b.SetObjectID(objID)
+		b.SetObjectType(bombs.Type)
+
+		b.SetChangeHandler(h)
+		b.SetExplosionHandler(func(obj objects.ExplosiveObject) {
+			_ = f.bCache.Enqueue(obj)
+
+			x, y := posToInt(obj.Transform().Position)
+			f.explosives[y][x] = nil
+
+			d := obj.ExplosionRadius()
+			for i := physics.Integer(0); i < d; i++ {
+				f.destroyObject(x-i, y)
+				f.destroyObject(x+i, y)
+				f.destroyObject(x, y-i)
+				f.destroyObject(x, y+i)
+			}
+		})
+
+		f.bCache.Add(b)
 	}
 }
 
 func (f *Field) UpdateObjects(d time.Duration) {
 	for i := physics.Integer(0); i < f.size.Height; i++ {
 		for j := physics.Integer(0); j < f.size.Width; j++ {
-			if f.objects[i][j] == nil {
-				continue
+			if f.explosives[i][j] != nil {
+				f.explosives[i][j].Update(d)
 			}
-			f.objects[i][j].Update(d)
+			if f.objects[i][j] != nil {
+				f.objects[i][j].Update(d)
+			}
 		}
 	}
+}
+
+func (f *Field) destroyObject(x, y physics.Integer) {
+	if x < 0 || x >= f.size.Width || y < 0 || y >= f.size.Height {
+		return
+	}
+	if f.objects[y][x] != nil {
+		if obj, ok := f.objects[y][x].(objects.DestructableObject); ok {
+			obj.Collapse()
+			f.objects[y][x] = nil
+		}
+	} else if f.explosives[y][x] != nil {
+		if obj, ok := f.explosives[y][x].(objects.DestructableObject); ok {
+			obj.Collapse()
+			f.explosives[y][x] = nil
+		}
+	}
+}
+
+func posToInt(p physics.PositionVec2D) (physics.Integer, physics.Integer) {
+	return physics.Integer(p.X), physics.Integer(p.Y)
 }

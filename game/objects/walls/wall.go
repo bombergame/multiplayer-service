@@ -53,6 +53,10 @@ func (w *Wall) Spawn(position physics.PositionVec2D) {
 func (w *Wall) Update(duration time.Duration) {
 }
 
+func (w *Wall) ChangeHandler() objects.ChangeHandler {
+	return w.changeHandler
+}
+
 func (w *Wall) SetChangeHandler(h objects.ChangeHandler) {
 	w.changeHandler = h
 }

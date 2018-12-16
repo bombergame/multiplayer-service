@@ -20,7 +20,9 @@ import (
 
 const (
 	DefaultAnonymousPlayerID = -1
+)
 
+const (
 	TickerPeriod          = 20 * time.Millisecond
 	BroadcastTickerPeriod = time.Second
 )
@@ -37,9 +39,10 @@ type Room struct {
 	field   *fields.Field
 	objects map[objects.ObjectID]objects.GameObject
 
-	maxNumPlayers  int64
-	allowAnonymous bool
-	players        map[int64]*players.Player
+	maxNumPlayers   int64
+	allowAnonymous  bool
+	numAlivePlayers int64
+	players         map[int64]*players.Player
 
 	cmdChan gamecommands.CmdChan
 
@@ -90,11 +93,11 @@ func (r *Room) RunGame() {
 			case c := <-r.cmdChan:
 				switch c {
 				case gamecommands.Start:
-					r.startGame()
+					r.withLock(r.startGame)
 				case gamecommands.Stop:
-					r.stopGame()
+					r.withLock(r.stopGame)
 				case gamecommands.End:
-					r.endGame()
+					r.withLock(r.endGame)
 				}
 			}
 		}
@@ -121,6 +124,13 @@ func (r *Room) AddPlayer(p *players.Player) error {
 	}
 
 	r.players[p.ID()] = p
+	p.SetDeathHandler(func(p *players.Player) {
+		r.numAlivePlayers--
+		if r.numAlivePlayers == 0 {
+			r.endGame()
+		}
+	})
+
 	r.broadcastState()
 
 	return nil
@@ -134,14 +144,19 @@ func (r *Room) DeletePlayer(p *players.Player) {
 	r.broadcastState()
 }
 
-func (r *Room) startGame() {
+func (r *Room) withLock(f func()) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	f()
+}
 
+func (r *Room) startGame() {
 	switch r.state {
 	case gamestate.Pending:
 		r.state = gamestate.On
 		r.broadcastState()
+
+		r.numAlivePlayers = int64(len(r.players))
 
 		r.field.PlaceObjects(r.players)
 		r.field.SpawnObjects(func(obj objects.GameObject) {
@@ -163,9 +178,6 @@ func (r *Room) startGame() {
 }
 
 func (r *Room) stopGame() {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
 	if r.state != gamestate.On {
 		return
 	}
@@ -175,9 +187,6 @@ func (r *Room) stopGame() {
 }
 
 func (r *Room) endGame() {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
 	r.state = gamestate.Off
 	r.broadcastState()
 }
@@ -217,6 +226,7 @@ func (r *Room) gameLoop() {
 			}
 		}
 
+		r.endGame()
 		r.mu.Unlock()
 	}
 }

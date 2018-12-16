@@ -42,6 +42,7 @@ type MovementHandler func(physics.PositionVec2D, physics.PositionVec2D)
 type CellObjectGetter func(physics.PositionVec2D) (GameObject, *errs.InvalidCellIndexError)
 
 type DynamicObject interface {
+	GameObject
 }
 
 type MovingObject interface {
@@ -58,6 +59,7 @@ type ExplosiveObject interface {
 	SetExplosionHandler(ExplosionHandler)
 }
 
-type BreakableObject interface {
-	Break()
+type DestructableObject interface {
+	GameObject
+	Collapse()
 }

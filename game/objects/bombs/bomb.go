@@ -81,16 +81,21 @@ func (b *Bomb) Spawn(pos physics.PositionVec2D) {
 }
 
 func (b *Bomb) Update(d time.Duration) {
+	if b.state != bombstate.Placed {
+		return
+	}
 	b.explosionTimeout -= d
 	if b.explosionTimeout < 0 {
-		b.state = bombstate.Detonated
-		b.changeHandler(b)
-		b.explosionHandler(b)
+		b.detonate()
 	}
 }
 
 func (b *Bomb) SetChangeHandler(h objects.ChangeHandler) {
 	b.changeHandler = h
+}
+
+func (b *Bomb) Collapse() {
+	b.detonate()
 }
 
 //easyjson:json
@@ -113,4 +118,10 @@ func (b *Bomb) Serialize() interface{} {
 		ExplosionRadius:  b.explosionRadius,
 		ExplosionTimeout: b.explosionTimeout.Seconds(),
 	}
+}
+
+func (b *Bomb) detonate() {
+	b.state = bombstate.Detonated
+	b.changeHandler(b)
+	b.explosionHandler(b)
 }

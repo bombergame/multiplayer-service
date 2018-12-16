@@ -17,6 +17,7 @@ const (
 	Type = "player"
 )
 
+type DeathHandler func(p *Player)
 type DropBombHandler func(physics.PositionVec2D)
 
 type Player struct {
@@ -35,6 +36,7 @@ type Player struct {
 	objGetter       objects.CellObjectGetter
 	movementHandler objects.MovementHandler
 	dropBombHandler DropBombHandler
+	deathHandler    DeathHandler
 	changeHandler   objects.ChangeHandler
 
 	mu *sync.Mutex
@@ -91,12 +93,16 @@ func (p *Player) SetMovementHandler(h objects.MovementHandler) {
 	p.movementHandler = h
 }
 
-func (p *Player) DropBombHandler(h DropBombHandler) {
+func (p *Player) SetDropBombHandler(h DropBombHandler) {
 	p.dropBombHandler = h
 }
 
 func (p *Player) SetChangeHandler(h objects.ChangeHandler) {
 	p.changeHandler = h
+}
+
+func (p *Player) SetDeathHandler(h DeathHandler) {
+	p.deathHandler = h
 }
 
 func (p *Player) Spawn(pos physics.PositionVec2D) {
@@ -112,6 +118,9 @@ func (p *Player) Spawn(pos physics.PositionVec2D) {
 }
 
 func (p *Player) Update(duration time.Duration) {
+	if p.state != playerstate.Alive {
+		return
+	}
 	p.movement.LastStepInterval += duration
 	p.handleCommands()
 }
@@ -134,6 +143,12 @@ func (p *Player) GetMessageData() MessageData {
 		Transform: p.transform,
 		Movement:  p.movement.GetMessageData(),
 	}
+}
+
+func (p *Player) Collapse() {
+	p.state = playerstate.Dead
+	p.changeHandler(p)
+	p.deathHandler(p)
 }
 
 func (p *Player) Serialize() interface{} {
