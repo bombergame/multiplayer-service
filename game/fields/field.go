@@ -75,6 +75,8 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 					return b, nil
 				}
 			}
+
+			log.Println("Check if can move: ", f.objects[y][x])
 			return f.objects[y][x], nil
 		})
 		p.SetMovementHandler(func(pOld, pNew physics.PositionVec2D) {

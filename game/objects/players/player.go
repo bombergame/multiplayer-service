@@ -172,6 +172,8 @@ func (p *Player) move(newPos physics.PositionVec2D) {
 		return
 	}
 
+	log.Println("Can move")
+
 	p.movementHandler(p.transform.Position, newPos)
 
 	p.transform.Position = newPos
