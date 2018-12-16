@@ -242,6 +242,8 @@ func (f *Field) print() {
 				} else if f.objects[i][j].ObjectType() == solidwalls.Type {
 					fmt.Print("#")
 				}
+			} else {
+				fmt.Print(" ")
 			}
 		}
 		fmt.Println()
