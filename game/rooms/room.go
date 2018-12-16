@@ -146,6 +146,10 @@ func (r *Room) DeletePlayer(p *players.Player) {
 	r.broadcastState()
 
 	log.Println("Player deleted: ", p)
+
+	if len(r.players) == 0 {
+		r.endGame()
+	}
 }
 
 func (r *Room) withLock(f func()) {
