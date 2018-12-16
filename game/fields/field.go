@@ -1,6 +1,7 @@
 package fields
 
 import (
+	"fmt"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/bombs"
@@ -89,13 +90,14 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 	index := 0
 	d := f.size.Height / n
 
+	rand.Seed(time.Now().UTC().UnixNano())
 	for y := physics.Integer(0); y < f.size.Height; y++ {
 		if y%d == 0 {
 			x := rand.Intn(int(f.size.Width))
 			f.objects[y][x] = pArr[index]
 			index++
 		} else {
-			for x := physics.Integer(1); x < f.size.Width-2; x++ {
+			for x := physics.Integer(1); x < f.size.Width-1; x++ {
 				prob := rand.NormFloat64()
 
 				if prob < EmptyProb {
@@ -116,6 +118,20 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 		}
 
 		for x := physics.Integer(0); x < f.size.Width; x++ {
+			obj := f.objects[y][x]
+			if obj == nil {
+				fmt.Print(" ")
+			} else if obj.ObjectType() == players.Type {
+				fmt.Print("P")
+			} else if obj.ObjectType() == weakwalls.Type {
+				fmt.Print("+")
+			} else if obj.ObjectType() == solidwalls.Type {
+				fmt.Print("#")
+			}
+		}
+		fmt.Println()
+
+		for x := physics.Integer(0); x < f.size.Width; x++ {
 			var b *bombs.Bomb
 			b = bombs.NewBomb()
 			b.SetObjectType(bombs.Type)
@@ -126,7 +142,7 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 
 const (
 	EmptyProb     = 0.5
-	WeakWallProb  = 0.6
+	WeakWallProb  = 0.7
 	SolidWallProb = 1.0
 )
 
