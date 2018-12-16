@@ -1,7 +1,6 @@
 package fields
 
 import (
-	"fmt"
 	"github.com/bombergame/multiplayer-service/game/errs"
 	"github.com/bombergame/multiplayer-service/game/objects"
 	"github.com/bombergame/multiplayer-service/game/objects/bombs"
@@ -116,20 +115,6 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 				f.objects[y][x] = obj
 			}
 		}
-
-		for x := physics.Integer(0); x < f.size.Width; x++ {
-			obj := f.objects[y][x]
-			if obj == nil {
-				fmt.Print(" ")
-			} else if obj.ObjectType() == players.Type {
-				fmt.Print("P")
-			} else if obj.ObjectType() == weakwalls.Type {
-				fmt.Print("+")
-			} else if obj.ObjectType() == solidwalls.Type {
-				fmt.Print("#")
-			}
-		}
-		fmt.Println()
 
 		for x := physics.Integer(0); x < f.size.Width; x++ {
 			var b *bombs.Bomb
