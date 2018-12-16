@@ -224,6 +224,7 @@ func (r *Room) gameLoop() {
 		if r.state == gamestate.On {
 			t := tCur.Sub(tStart)
 			if t > r.tLimit {
+				r.endGame()
 				break
 			}
 
@@ -234,7 +235,6 @@ func (r *Room) gameLoop() {
 			if tCur.Sub(tPrevBcst) > BroadcastTickerPeriod {
 				r.broadcastTicker(t)
 				tPrevBcst = tCur
-				r.endGame()
 			}
 		}
 
