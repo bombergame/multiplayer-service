@@ -58,6 +58,13 @@ func (f *Field) PlacePlayers(pAll map[int64]*players.Player) {
 			}
 			return f.cells[y][x], nil
 		})
+		p.SetMovementHandler(func(pOld, pNew physics.PositionVec2D) {
+			xOld, yOld := physics.Integer(pOld.X), physics.Integer(pOld.Y)
+			xNew, yNew := physics.Integer(pNew.X), physics.Integer(pNew.Y)
+			obj := f.cells[yOld][xOld]
+			f.cells[yOld][xOld] = nil
+			f.cells[yNew][xNew] = obj
+		})
 
 		f.cells[y][x] = p
 		x++

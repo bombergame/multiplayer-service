@@ -30,8 +30,9 @@ type Player struct {
 	cmdChan *playercommands.CmdChan
 	outChan *ws.OutChan
 
-	objGetter     objects.CellObjectGetter
-	changeHandler objects.ChangeHandler
+	objGetter       objects.CellObjectGetter
+	movementHandler objects.MovementHandler
+	changeHandler   objects.ChangeHandler
 
 	mu *sync.Mutex
 }
@@ -83,6 +84,14 @@ func (p *Player) SetOutChan(outChan *ws.OutChan) {
 	p.outChan = outChan
 }
 
+func (p *Player) SetMovementHandler(h objects.MovementHandler) {
+	p.movementHandler = h
+}
+
+func (p *Player) SetChangeHandler(h objects.ChangeHandler) {
+	p.changeHandler = h
+}
+
 func (p *Player) Spawn(pos physics.PositionVec2D) {
 	p.state = playerstate.Alive
 
@@ -96,12 +105,8 @@ func (p *Player) Spawn(pos physics.PositionVec2D) {
 }
 
 func (p *Player) Update(duration time.Duration) {
-	p.passTime(duration)
+	p.movement.LastStepInterval += duration
 	p.handleCommands()
-}
-
-func (p *Player) SetChangeHandler(h objects.ChangeHandler) {
-	p.changeHandler = h
 }
 
 //easyjson:json
@@ -136,12 +141,17 @@ func (p *Player) move(newPos physics.PositionVec2D) {
 	if p.movement.LastStepInterval < p.movement.MinStepInterval {
 		return
 	}
+
 	obj, err := p.objGetter(newPos)
 	if err != nil || obj != nil {
 		return
 	}
+
+	p.movementHandler(p.transform.Position, newPos)
+
 	p.transform.Position = newPos
 	p.movement.LastStepInterval = 0
+
 	p.changeHandler(p)
 }
 
@@ -175,8 +185,4 @@ func (p *Player) handleCmd(c playercommands.Cmd) {
 	case playercommands.MoveRight:
 		p.move(p.transform.Position.Right(p.movement.StepSize))
 	}
-}
-
-func (p *Player) passTime(duration time.Duration) {
-	p.movement.LastStepInterval += duration
 }

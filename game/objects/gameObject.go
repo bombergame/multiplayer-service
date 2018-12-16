@@ -10,7 +10,6 @@ import (
 )
 
 type ChangeHandler func(GameObject)
-type CollisionHandler func(GameObject)
 
 type GameObject interface {
 	ObjectType() ObjectType
@@ -39,6 +38,7 @@ type MessageData struct {
 	ObjectType ObjectType `json:"object_type"`
 }
 
+type MovementHandler func(physics.PositionVec2D, physics.PositionVec2D)
 type CellObjectGetter func(physics.PositionVec2D) (GameObject, *errs.InvalidCellIndexError)
 
 type DynamicObject interface {
@@ -46,6 +46,7 @@ type DynamicObject interface {
 
 type MovingObject interface {
 	DynamicObject
+	SetMovementHandler(MovementHandler)
 	SetCellObjectGetter(CellObjectGetter)
 }
 
