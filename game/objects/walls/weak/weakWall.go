@@ -31,7 +31,7 @@ func (w *Wall) Collapse() {
 //easyjson:json
 type MessageData struct {
 	walls.MessageData
-	State weakwallstate.State
+	State weakwallstate.State `json:"state"`
 }
 
 func (w *Wall) GetMessageData() MessageData {

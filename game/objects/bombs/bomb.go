@@ -35,9 +35,7 @@ type Bomb struct {
 
 func NewBomb() *Bomb {
 	return &Bomb{
-		state:            bombstate.Inactive,
-		explosionRadius:  DefaultExplosionRadius,
-		explosionTimeout: DefaultExplosionTimeout,
+		state: bombstate.Inactive,
 	}
 }
 
@@ -76,6 +74,9 @@ func (b *Bomb) SetExplosionHandler(h objects.ExplosionHandler) {
 func (b *Bomb) Spawn(pos physics.PositionVec2D) {
 	b.state = bombstate.Placed
 	b.transform.Position = pos
+
+	b.explosionRadius = DefaultExplosionRadius
+	b.explosionTimeout = DefaultExplosionTimeout
 
 	b.changeHandler(b)
 }

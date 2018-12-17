@@ -38,7 +38,7 @@ func easyjsonE0758a88DecodeGithubComBombergameMultiplayerServiceGameObjectsWalls
 			continue
 		}
 		switch key {
-		case "State":
+		case "state":
 			out.State = state.State(in.String())
 		case "transform":
 			if data := in.Raw(); in.Ok() {
@@ -63,7 +63,7 @@ func easyjsonE0758a88EncodeGithubComBombergameMultiplayerServiceGameObjectsWalls
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"State\":"
+		const prefix string = ",\"state\":"
 		if first {
 			first = false
 			out.RawString(prefix[1:])
