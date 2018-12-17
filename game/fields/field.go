@@ -182,10 +182,27 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 
 			d := obj.ExplosionRadius()
 			for i := physics.Integer(1); i <= d; i++ {
-				f.destroyObject(x-i, y)
-				f.destroyObject(x+i, y)
-				f.destroyObject(x, y-i)
-				f.destroyObject(x, y+i)
+				if shouldStop := f.destroyObject(x-i, y); shouldStop {
+					break
+				}
+			}
+
+			for i := physics.Integer(1); i <= d; i++ {
+				if shouldStop := f.destroyObject(x+i, y); shouldStop {
+					break
+				}
+			}
+
+			for i := physics.Integer(1); i <= d; i++ {
+				if shouldStop := f.destroyObject(x, y-i); shouldStop {
+					break
+				}
+			}
+
+			for i := physics.Integer(1); i <= d; i++ {
+				if shouldStop := f.destroyObject(x, y+i); shouldStop {
+					break
+				}
 			}
 		})
 
@@ -206,14 +223,16 @@ func (f *Field) UpdateObjects(d time.Duration) {
 	}
 }
 
-func (f *Field) destroyObject(x, y physics.Integer) {
+func (f *Field) destroyObject(x, y physics.Integer) (shouldStop bool) {
 	if x < 0 || x >= f.size.Width || y < 0 || y >= f.size.Height {
-		return
+		return true
 	}
 	if f.objects[y][x] != nil {
 		if obj, ok := f.objects[y][x].(objects.DestructableObject); ok {
 			obj.Collapse()
 			f.objects[y][x] = nil
+		} else {
+			return true
 		}
 	} else if f.explosives[y][x] != nil {
 		if obj, ok := f.explosives[y][x].(objects.DestructableObject); ok {
@@ -221,6 +240,7 @@ func (f *Field) destroyObject(x, y physics.Integer) {
 			f.explosives[y][x] = nil
 		}
 	}
+	return false
 }
 
 func posToInt(p physics.PositionVec2D) (physics.Integer, physics.Integer) {
