@@ -181,7 +181,7 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 			f.explosives[y][x] = nil
 
 			d := obj.ExplosionRadius()
-			for i := physics.Integer(0); i < d; i++ {
+			for i := physics.Integer(1); i <= d; i++ {
 				f.destroyObject(x-i, y)
 				f.destroyObject(x+i, y)
 				f.destroyObject(x, y-i)
