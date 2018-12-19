@@ -112,7 +112,7 @@ func (srv *Service) handleAuthRequest(conn *websocket.Conn, msg *ws.InMessage) (
 		Result: &authReqData, TagName: "json",
 	})
 	if err != nil {
-		return consts.AnyInt, errs.NewServiceError(err)
+		return consts.AnyInt, errs.NewInternalServiceError(err)
 	}
 
 	if err := decoder.Decode(&msg.Data); err != nil {

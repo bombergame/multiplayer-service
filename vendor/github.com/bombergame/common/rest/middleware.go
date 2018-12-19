@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+//WithRecover recovers after panic in request handler
 func (srv *Service) WithRecover(h http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -21,6 +22,7 @@ func (srv *Service) WithRecover(h http.Handler) http.Handler {
 	)
 }
 
+//WithLogs adds logs for each http request
 func (srv *Service) WithLogs(h http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -29,11 +31,14 @@ func (srv *Service) WithLogs(h http.Handler) http.Handler {
 			}
 			h.ServeHTTP(wr, r)
 
-			srv.components.Logger.Info(fmt.Sprintf("%s %s %d", r.Method, r.RequestURI, wr.status))
+			srv.components.Logger.Info(
+				fmt.Sprintf("%s %s %d", r.Method, r.RequestURI, wr.status),
+			)
 		},
 	)
 }
 
+//WithAuth parses user profile id from auth token
 func (srv *Service) WithAuth(h http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +66,7 @@ func (srv *Service) WithAuth(h http.Handler) http.Handler {
 	)
 }
 
+//CORS contains CORS response headers
 type CORS struct {
 	Origins     []string
 	Methods     []string
@@ -68,13 +74,26 @@ type CORS struct {
 	Credentials bool
 }
 
+//WithCORS adds CORS headers to each response
 func (srv *Service) WithCORS(h http.Handler, cors CORS) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Access-Control-Allow-Origin", strings.Join(cors.Origins, ","))
-			w.Header().Set("Access-Control-Allow-Credentials", strconv.FormatBool(cors.Credentials))
-			w.Header().Set("Access-Control-Allow-Methods", strings.Join(cors.Methods, ","))
-			w.Header().Set("Access-Control-Allow-Headers", strings.Join(cors.Headers, ","))
+			w.Header().Set(
+				"Access-Control-Allow-Origin",
+				strings.Join(cors.Origins, ","),
+			)
+			w.Header().Set(
+				"Access-Control-Allow-Credentials",
+				strconv.FormatBool(cors.Credentials),
+			)
+			w.Header().Set(
+				"Access-Control-Allow-Methods",
+				strings.Join(cors.Methods, ","),
+			)
+			w.Header().Set(
+				"Access-Control-Allow-Headers",
+				strings.Join(cors.Headers, ","),
+			)
 			h.ServeHTTP(w, r)
 		},
 	)

@@ -24,7 +24,7 @@ func (srv *Service) readRoomID(r *http.Request) (uuid.UUID, error) {
 	idStr := mux.Vars(r)[RoomIDVar]
 	if idStr == consts.EmptyString {
 		err := errors.New(RoomIDVar + " not mapped")
-		return uuid.Nil, errs.NewServiceError(err)
+		return uuid.Nil, errs.NewInternalServiceError(err)
 	}
 
 	id, err := uuid.FromString(idStr)

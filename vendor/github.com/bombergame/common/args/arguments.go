@@ -5,13 +5,14 @@ import (
 	"regexp"
 )
 
-var (
-	osArgs = os.Args
-)
-
+//GetString returns string command line argument
 func GetString(name, defaultValue string) string {
-	r, _ := regexp.Compile(`^--(?P<name>\w+)=(?P<value>.+)$`)
-	for _, arg := range osArgs {
+	r, err := regexp.Compile(`^--(?P<name>\w+)=(?P<value>.+)$`)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, arg := range os.Args {
 		mp := parseGroups(r, arg)
 		if mp == nil {
 			continue
@@ -24,9 +25,14 @@ func GetString(name, defaultValue string) string {
 	return defaultValue
 }
 
+//GetFlag returns command line flag
 func GetFlag(name string, defaultValue bool) bool {
-	r, _ := regexp.Compile(`^--(?P<name>\w+)$`)
-	for _, arg := range osArgs {
+	r, err := regexp.Compile(`^--(?P<name>\w+)$`)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, arg := range os.Args {
 		mp := parseGroups(r, arg)
 		if mp == nil {
 			continue

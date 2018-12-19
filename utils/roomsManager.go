@@ -15,15 +15,18 @@ type RoomsManager struct {
 	rwMutex     *sync.RWMutex
 	rooms       map[uuid.UUID]*rooms.Room
 	numRooms    int64
-	notFoundErr *errs.NotFoundError
+	notFoundErr *errs.ServiceError
 }
 
 func NewRoomsManager() *RoomsManager {
 	return &RoomsManager{
-		rwMutex:     &sync.RWMutex{},
-		rooms:       make(map[uuid.UUID]*rooms.Room, 0),
-		numRooms:    0,
-		notFoundErr: errs.NewNotFoundError(RoomNotFoundMessage).(*errs.NotFoundError),
+		rwMutex:  &sync.RWMutex{},
+		rooms:    make(map[uuid.UUID]*rooms.Room, 0),
+		numRooms: 0,
+		notFoundErr: func() *errs.ServiceError {
+			err := errs.NewNotFoundError(RoomNotFoundMessage)
+			return err.(*errs.ServiceError)
+		}(),
 	}
 }
 

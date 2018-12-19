@@ -2,33 +2,40 @@ package logs
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"runtime/debug"
+
+	"github.com/sirupsen/logrus"
 )
 
+//Logger is the wrapper for a logging library
 type Logger struct {
 	logger *logrus.Logger
 }
 
+//NewLogger creates logger instance
 func NewLogger() *Logger {
 	return &Logger{
 		logger: logrus.StandardLogger(),
 	}
 }
 
+//Info writes info level log
 func (log *Logger) Info(args ...interface{}) {
 	log.logger.Info(args...)
 }
 
+//Error writes error level log
 func (log *Logger) Error(args ...interface{}) {
 	log.withStackTrace(log.logger.Error, args)
 }
 
+//Fatal writes fatal level log
 func (log *Logger) Fatal(args ...interface{}) {
 	log.withStackTrace(log.logger.Fatal, args)
 }
 
-func (log *Logger) AsLogrusLogger() *logrus.Logger {
+//LogrusLogger returns logrus.Logger object
+func (log *Logger) LogrusLogger() *logrus.Logger {
 	return log.logger
 }
 
