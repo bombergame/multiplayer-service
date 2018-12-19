@@ -29,6 +29,16 @@ func (srv *Service) createRoom(w http.ResponseWriter, r *http.Request) {
 		srv.WriteErrorWithBody(w, err)
 		return
 	}
+
+	room.SetGameEndHandler(func(instance *rooms.Room) {
+		n, err := srv.components.RoomsManager.DeleteRoom(instance.ID())
+		if err != nil {
+			srv.Logger().Error(err)
+			return
+		}
+		srv.metrics.numRooms.Set(float64(n))
+	})
+
 	room.RunGame()
 
 	srv.metrics.numRooms.Set(float64(n))

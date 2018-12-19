@@ -27,6 +27,8 @@ const (
 	BroadcastTickerPeriod = time.Second
 )
 
+type GameEndHandler func(*Room)
+
 type Room struct {
 	id    uuid.UUID
 	title string
@@ -45,6 +47,8 @@ type Room struct {
 	players         map[int64]*players.Player
 
 	cmdChan gamecommands.CmdChan
+
+	gameEndHandler GameEndHandler
 
 	mu sync.RWMutex
 }
@@ -84,6 +88,10 @@ func (r *Room) SetID(id uuid.UUID) {
 
 func (r *Room) CmdChan() *gamecommands.CmdChan {
 	return &r.cmdChan
+}
+
+func (r *Room) SetGameEndHandler(h GameEndHandler) {
+	r.gameEndHandler = h
 }
 
 func (r *Room) RunGame() {
@@ -202,8 +210,7 @@ func (r *Room) stopGame() {
 func (r *Room) endGame() {
 	r.state = gamestate.Off
 	r.broadcastState()
-
-	log.Println("End game")
+	r.gameEndHandler(r)
 }
 
 func (r *Room) findFreeAnonID() int64 {
