@@ -24,7 +24,7 @@ jobs:
 
     - stage: deploy
       script:
-       - ssh ${SSH_USERNAME}@bombich.ru -p ${SSH_PASSWORD}
+       - echo ${SSH_PASSWORD} | ssh ${SSH_USERNAME}@bombich.ru
        - git clone https://github.com/bombergame/multiplayer-service
        - git clone https://github.com/bombergame/service-config
        - echo ${SSH_PASSWORD} | sudo docker build -t bombergame/multiplayer-service .
