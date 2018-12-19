@@ -62,34 +62,23 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 	for _, p := range pAll {
 		p.SetObjectType(players.Type)
 		p.SetCellObjectGetter(func(pos physics.PositionVec2D) (objects.GameObject, *errs.InvalidCellIndexError) {
-			log.Println("Checking position: ", pos)
-
 			x, y := posToInt(pos)
 			if x < 0 || x >= f.size.Width || y < 0 || y >= f.size.Height {
-				log.Println("Cannot move. Cell index out of range")
 				return nil, f.invalidCellIndexError
 			}
 			if f.explosives[y][x] != nil {
-				log.Println("Cannot move. Explosive")
 				if b, ok := f.explosives[y][x].(*bombs.Bomb); ok {
-					log.Println("Cannot move. Explosive is a bomb")
 					return b, nil
 				}
 			}
-
-			log.Println("Check if can move: ", f.objects[y][x])
 			return f.objects[y][x], nil
 		})
 		p.SetMovementHandler(func(pOld, pNew physics.PositionVec2D) {
-			f.print("Before move: \n")
-
 			xOld, yOld := posToInt(pOld)
 			xNew, yNew := posToInt(pNew)
 			obj := f.objects[yOld][xOld]
 			f.objects[yOld][xOld] = nil
 			f.objects[yNew][xNew] = obj
-
-			f.print("After move: \n")
 		})
 		p.SetDropBombHandler(func(pos physics.PositionVec2D) {
 			x, y := posToInt(pos)
@@ -101,8 +90,6 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 			b := v.(*bombs.Bomb)
 			b.Spawn(pos)
 			f.explosives[y][x] = b
-
-			log.Println("Bomb placed:", pos)
 		})
 
 		pArr = append(pArr, p)
@@ -173,12 +160,11 @@ func (f *Field) SpawnObjects(h objects.ChangeHandler) {
 
 		b.SetChangeHandler(h)
 		b.SetExplosionHandler(func(obj objects.ExplosiveObject) {
-			log.Println("Explosion: ", obj)
-
 			_ = f.bCache.Enqueue(obj)
 
 			x, y := posToInt(obj.Transform().Position)
 			f.explosives[y][x] = nil
+			_ = f.destroyObject(x, y)
 
 			d := obj.ExplosionRadius()
 			for i := physics.Integer(1); i <= d; i++ {
