@@ -21,3 +21,12 @@ jobs:
         - if [ ${TRAVIS_BRANCH} = "master" ]; then
           docker push bombergame/multiplayer-service;
           fi
+
+    - stage: deploy
+      script:
+       - ssh ${SSH_USERNAME}@bombich.ru -p ${SSH_PASSWORD}
+       - git clone https://github.com/bombergame/multiplayer-service
+       - git clone https://github.com/bombergame/service-config
+       - echo ${SSH_PASSWORD} | sudo docker build -t bombergame/multiplayer-service .
+       - sudo docker-compose -f ./service-config/docker-compose.yml up -d
+       - exit
