@@ -26,9 +26,9 @@ jobs:
       services:
         - docker
       before_script:
-        - echo ${SSH_PASSWORD} | scp ${SSH_USER}@${SERVER_HOST}:/etc/docker/ca.pem ca.pem
-        - echo ${SSH_PASSWORD} | scp ${SSH_USER}@${SERVER_HOST}:/etc/docker/cert.pem cert.pem
-        - echo ${SSH_PASSWORD} | scp ${SSH_USER}@${SERVER_HOST}:/etc/docker/key.pem key.pem
+        - echo ${SSH_PASSWORD} && echo "yes" | scp ${SSH_USER}@${SERVER_HOST}:/etc/docker/ca.pem ca.pem
+        - echo ${SSH_PASSWORD} && echo "yes" | scp ${SSH_USER}@${SERVER_HOST}:/etc/docker/cert.pem cert.pem
+        - echo ${SSH_PASSWORD} && echo "yes" | scp ${SSH_USER}@${SERVER_HOST}:/etc/docker/key.pem key.pem
       script:
         - docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H=${SERVER_HOST}:${SERVER_PORT} version
       after_script:
