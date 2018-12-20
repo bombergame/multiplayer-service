@@ -14,7 +14,7 @@ jobs:
       services:
         - docker
       script:
-        - docker build -t bombergame/multiplayer-service .
+        - ./build_image.sh bombergame/multiplayer-service
       after_success:
         - if [[ ${TRAVIS_BRANCH} == "master" ]] && [[ ${TRAVIS_PULL_REQUEST} == "false" ]]; then
             ./push_image.sh bombergame/multiplayer-service;
