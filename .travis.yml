@@ -26,12 +26,10 @@ jobs:
       services:
         - docker
       env:
-        - DOCKER_TLS_VERIFY=1 COMPOSE_TLS_VERSION=TLSv1_2 DOCKER_HOST=tcp://bombich.ru:2376
+        - DOCKER_TLS_VERIFY=1 COMPOSE_TLS_VERSION=TLSv1_2 DOCKER_HOST=tcp://bombich.ru:2376 DOCKER_CERT_PATH=${TRAVIS_BUILD_DIR}
       before_script:
-        - export DOCKER_CERT_PATH=${TRAVIS_BUILD_DIR}
-        - echo ${DOCKER_CERT_PATH}
         - git clone https://github.com/bombergame/service-config &&
               mv ./service-config/docker-compose.yml ./docker-compose.yml &&
               ./service-config/decrypt.sh ./service-config .
       script:
-        - docker-compose up -d
+        - docker-compose pull && docker-compose up -d
