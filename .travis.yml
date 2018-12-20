@@ -23,10 +23,7 @@ jobs:
           fi
 
     - stage: deploy
+      services:
+        - docker
       script:
-       - echo "yes" | echo ${SSH_PASSWORD} | ssh -X -Y ${SSH_USERNAME}@bombich.ru
-       - git clone https://github.com/bombergame/multiplayer-service
-       - git clone https://github.com/bombergame/service-config
-       - echo ${SSH_PASSWORD} | sudo docker build -t bombergame/multiplayer-service .
-       - sudo docker-compose -f ./service-config/docker-compose.yml up -d
-       - exit
+        - docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H=$SERVER_HOST:$SERVER_PORT version
