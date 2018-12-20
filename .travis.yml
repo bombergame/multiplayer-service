@@ -25,5 +25,11 @@ jobs:
     - stage: deploy
       services:
         - docker
+      before_script:
+        - echo ${CA_PEM} > ca.pem
+        - echo ${CERT_PEM} > cert.pem
+        - echo ${KEY_PEM} > key.pem
       script:
-        - docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H=$SERVER_HOST:$SERVER_PORT version
+        - docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H=${SERVER_HOST}:${SERVER_PORT} version
+      after_script:
+        - rm ca.pem cert.pem key.pem
