@@ -26,10 +26,10 @@ jobs:
       services:
         - docker
       env:
-        - COMPOSE_TLS_VERSION=TLSv1_2 DOCKER_HOST=tcp://bombich.ru:2376 DOCKER_TLS_VERIFY=1 DOCKER_CERT_PATH=$PWD
+        - COMPOSE_TLS_VERSION=TLSv1_2 DOCKER_HOST=tcp://bombich.ru:2376 DOCKER_TLS_VERIFY=1
       before_script:
         - git clone https://github.com/bombergame/service-config &&
               mv ./service-config/docker-compose.yml ./docker-compose.yml &&
               ./service-config/decrypt.sh ./service-config .
       script:
-        - docker-compose up -d
+        - docker-compose --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem up -d
