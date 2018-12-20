@@ -30,5 +30,4 @@ jobs:
               mv ./service-config/docker-compose.yml ./docker-compose.yml &&
               ./service-config/decrypt.sh ./service-config .
       script:
-        - docker-compose --tlsverify --tlscacert=ca.pem --tlscert=cert.pem \
-                  --tlskey=key.pem -H bombich.ru:2376 up -d
+        - docker-compose --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H bombich.ru:2376 up -d
