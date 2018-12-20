@@ -18,8 +18,8 @@ jobs:
       script:
         - docker build -t bombergame/multiplayer-service .
       after_success:
-        - if [ ${TRAVIS_BRANCH} = "master" ]; then
-          docker push bombergame/multiplayer-service;
+        - if [[ ${TRAVIS_BRANCH} == "master" ]] && [[ ${TRAVIS_PULL_REQUEST} == "false" ]]; then
+            docker push bombergame/multiplayer-service;
           fi
 
     - stage: deploy
@@ -32,8 +32,8 @@ jobs:
         - export DOCKER_HOST=tcp://${SERVER_HOST}:${SERVER_PORT}
       script:
         - if [[ ${TRAVIS_BRANCH} == "master" ]] && [[ ${TRAVIS_PULL_REQUEST} == "false" ]]; then
-              git clone https://github.com/bombergame/service-config &&
-                  mv ./service-config/docker-compose.yml ./docker-compose.yml &&
-                  ./service-config/decrypt.sh ./service-config . &&
-                  docker-compose pull && docker-compose up -d;
+            git clone https://github.com/bombergame/service-config &&
+              mv ./service-config/docker-compose.yml ./docker-compose.yml &&
+              ./service-config/decrypt.sh ./service-config . &&
+              docker-compose pull && docker-compose up -d;
           fi
