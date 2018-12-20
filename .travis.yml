@@ -27,7 +27,7 @@ jobs:
         - docker
       before_script:
         - git clone https://github.com/bombergame/service-config
-        - ./service-config/decrypt.sh
+        - ./service-config/decrypt.sh ./service-config
       script:
         - docker --tlsverify --tlscacert=./service-config/ca.pem \
                              --tlscert=./service-config/cert.pem \
