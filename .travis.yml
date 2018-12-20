@@ -27,11 +27,9 @@ jobs:
         - docker
       before_script:
         - git clone https://github.com/bombergame/service-config
-        - ./service-config/decrypt.sh ./service-config
+        - ./service-config/decrypt.sh ./service-config .
+        - ls -al
       script:
-        - docker --tlsverify --tlscacert=./service-config/ca.pem \
-                             --tlscert=./service-config/cert.pem \
-                             --tlskey=./service-config/key.pem \
-                             -H=${SERVER_HOST}:${SERVER_PORT} version
-      after_script:
-        - rm -r ./service-config
+        - docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem \
+                                             -H=${SERVER_HOST}:${SERVER_PORT} version
+
