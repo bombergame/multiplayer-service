@@ -95,12 +95,12 @@ func (f *Field) PlaceObjects(pAll map[int64]*players.Player) {
 		pArr = append(pArr, p)
 	}
 
-	index := 0
+	index := physics.Integer(0)
 	d := f.size.Height / n
 
 	rand.Seed(time.Now().UTC().UnixNano())
 	for y := physics.Integer(0); y < f.size.Height; y++ {
-		if y%d == 0 {
+		if y%d == 0 && index < n {
 			x := rand.Intn(int(f.size.Width))
 			f.objects[y][x] = pArr[index]
 			index++
