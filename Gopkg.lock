@@ -136,12 +136,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:53bc4cd4914cd7cd52139990d5170d6dc99067ae31c56530621b18b35fc30318"
+  digest = "1:47d7c89197deb7a471cc9eba5783e07b6a0e53d7bdeef0cb9a901b25a541fbec"
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
   pruneopts = "UT"
-  revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
-  version = "v1.1.2"
+  revision = "9e4011917e467353a5cacb6b11f3991b381055c8"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:ef03fb1dae4d010196652653f00a8002e94c19bcabdc8ca5100a804ffef63a47"
